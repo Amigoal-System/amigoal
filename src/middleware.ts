@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const host = request.headers.get('host');
   
-  // Extract subdomain
+  // Extract subdomain for club-specific routing (future use)
   let subdomain = null;
   if (host) {
     const parts = host.split('.');
