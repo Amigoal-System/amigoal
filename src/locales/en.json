@@ -1,0 +1,120 @@
+
+
+{
+    "login": {
+        "title": "Welcome to Amigoal",
+        "description": "Enter your credentials to access your account",
+        "usernameLabel": "Username",
+        "passwordLabel": "Password",
+        "forgotPassword": "Forgot your password?",
+        "loginButton": "Login",
+        "orContinueWith": "Or continue with",
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up",
+        "quickLogins": "Quick Logins (for testing)"
+    },
+     "register_page": {
+        "title": "Register Club",
+        "description": "Get started with your club on Amigoal in just a few steps",
+        "backButton": "Back",
+        "nextButton": "Next",
+        "finishButton": "Complete Registration",
+        "step1": {
+            "label": "Club Info",
+            "description": "Name & Subdomain",
+            "clubNameLabel": "Club Name",
+            "subdomainLabel": "Desired Subdomain",
+            "subdomainTaken": "This subdomain is already taken.",
+            "subdomainErrorTitle": "Subdomain Check Error",
+            "subdomainErrorDescription": "Could not check if the subdomain is available."
+        },
+        "step2": {
+            "label": "Your Account",
+            "description": "Personal Details",
+            "fullNameLabel": "Your Full Name",
+            "emailLabel": "Your Email",
+            "passwordLabel": "Password"
+        },
+        "step3": {
+            "label": "Package Selection",
+            "description": "Choose your features"
+        },
+        "step4": {
+            "label": "Confirmation",
+            "description": "Review details",
+            "almostDoneTitle": "Almost done!",
+            "checkInfo": "Please review your details before completing the registration.",
+            "clubLabel": "Club",
+            "yourNameLabel": "Your Name",
+            "yourEmailLabel": "Your Email",
+            "packageLabel": "Package"
+        },
+        "toast": {
+            "successTitle": "Club successfully registered!",
+            "successDescription": "{CLUB_NAME} has been successfully added.",
+            "errorTitle": "Registration Failed",
+            "errorDescription": "Please try again later."
+        }
+    },
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "close": "Close",
+        "confirm": "Confirm",
+        "add": "Add",
+        "new": "New",
+        "name": "Name",
+        "description": "Description",
+        "status": "Status",
+        "actions": "Actions",
+        "all": "All",
+        "from": "From",
+        "to": "To",
+        "date": "Date",
+        "time": "Time",
+        "details": "Details",
+        "team": "Team",
+        "back": "Back",
+        "next": "Next",
+        "send": "Send",
+        "search": "Search..."
+    },
+    "dashboard_nav": {
+        "dashboard": "Dashboard",
+        "clubs": "Clubs",
+        "leads": "Leads",
+        "referrals": "Referrals",
+        "sponsoring": "Sponsoring",
+        "newsletter": "Newsletter",
+        "members": "Members",
+        "teams": "Teams",
+        "coaches": "Coaches",
+        "website": "Website",
+        "training": "Training",
+        "matches": "Matches",
+        "tournaments": "Tournaments",
+        "live_ticker": "Live Ticker",
+        "statistics": "Performance",
+        "finances": "Finances",
+        "invoices": "Invoices",
+        "expenses": "Expenses",
+        "team_cash": "Team Cash",
+        "settings": "Settings"
+    },
+    "dashboard_teams": {
+        "title": "Teams Overview",
+        "description": "Manage and oversee all teams in your club.",
+        "add_team": "New Team",
+        "active": "Active",
+        "women": "Women",
+        "juniors": "Juniors",
+        "seniors_veterans": "Seniors / Veterans",
+        "players": "Players",
+        "trainer": "Coach",
+        "league": "League",
+        "membership_rate": "Membership %",
+        "training_attendance": "Training Attendance %"
+    }
+}

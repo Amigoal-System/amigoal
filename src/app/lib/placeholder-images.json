@@ -1,0 +1,10 @@
+{
+    "bootcamp_featured": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&h=400&fit=crop",
+    "bootcamp_gallery": [
+        "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1628891890377-573783515367?q=80&w=600&h=400&fit=crop"
+    ],
+    "default_600x400": "https://images.unsplash.com/photo-1551854374-f18a750a99de?q=80&w=600&h=400&fit=crop"
+}

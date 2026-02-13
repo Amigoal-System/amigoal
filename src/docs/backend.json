@@ -1,0 +1,606 @@
+
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's public profile information.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["displayName", "email"]
+    },
+    "amigoalStaff": {
+        "title": "Amigoal Staff",
+        "description": "Represents an internal Amigoal staff member.",
+        "type": "object",
+        "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "roles": { 
+                "type": "array",
+                "items": { "type": "string", "enum": ["Super-Admin", "Marketing", "Administration", "Finanzen", "Techniker"] }
+            }
+        },
+        "required": ["name", "email", "roles"]
+    },
+    "member": {
+        "title": "Member",
+        "description": "Represents a club member, can be a player, coach, etc.",
+        "type": "object",
+        "properties": {
+            "email": { "type": "string", "format": "email" },
+            "firstName": { "type": "string" },
+            "lastName": { "type": "string" },
+            "roles": { "type": "array", "items": { "type": "string" } },
+            "clubId": { "type": "string" }
+        },
+        "required": ["email", "firstName", "lastName"]
+    },
+    "country": {
+      "title": "Country",
+      "description": "Represents a country with its UEFA code.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "uefa_code": { "type": "string" }
+      },
+      "required": ["name", "uefa_code"]
+    },
+    "association": {
+      "title": "Association",
+      "description": "Represents a football association, national or regional.",
+      "type": "object",
+      "properties": {
+        "country_id": { "type": "string", "description": "Reference to the country ID." },
+        "name": { "type": "string" },
+        "abbreviation": { "type": "string" },
+        "seat": { "type": "string" },
+        "region": { "type": "string" },
+        "level": { "type": "string", "enum": ["national", "regional"] },
+        "website": { "type": "string", "format": "uri" }
+      },
+      "required": ["country_id", "name", "abbreviation", "level"]
+    },
+    "club": {
+      "title": "Club",
+      "description": "Represents a football club.",
+      "type": "object",
+      "properties": {
+        "association_id": { "type": "string", "description": "Reference to the association ID." },
+        "name": { "type": "string" },
+        "founded": { "type": "number" },
+        "website": { "type": "string", "format": "uri" },
+        "city": { "type": "string" },
+        "manager": { "type": "string" },
+        "logo": { "type": "string", "format": "uri" },
+        "clubLoginUser": { "type": "string" },
+        "contactEmail": { "type": "string", "format": "email" },
+        "status": { "type": "string", "enum": ["active", "suspended", "archived"] },
+        "package": { "type": "string" },
+        "seekingSponsorship": { "type": "boolean" },
+        "sponsorshipNeeds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["association_id", "name"]
+    },
+    "investor": {
+      "title": "Investor",
+      "description": "Represents an investor in the Amigoal platform.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "type": { "type": "string", "enum": ["VC", "Angel Investor", "Family Office"] },
+        "investment": { "type": "number" },
+        "equity": { "type": "number" },
+        "status": { "type": "string", "enum": ["Active", "Inactive", "Prospect"] },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["name", "contact", "email", "type", "status"]
+    },
+    "poll": {
+      "title": "Poll",
+      "description": "A poll with questions and options.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "clubId": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "number" },
+              "text": { "type": "string" },
+              "votes": { "type": "number" }
+            },
+            "required": ["id", "text", "votes"]
+          }
+        },
+        "voters": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "target": {
+            "type": "object",
+            "properties": {
+                "level": { "type": "string", "enum": ["public", "club", "team"] },
+                "id": { "type": "string" }
+            }
+        }
+      },
+      "required": ["title", "createdBy", "createdAt", "options"]
+    },
+    "teamCategory": {
+        "title": "Team Category",
+        "description": "Represents a category for grouping teams, e.g., by age.",
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "order": { "type": "number" },
+          "countryCode": { "type": "string", "description": "The country code this category belongs to, e.g., 'CH'" }
+        },
+        "required": ["name", "order", "countryCode"]
+    },
+    "sponsorLead": {
+      "title": "Sponsor Lead",
+      "description": "Represents a potential sponsor lead.",
+      "type": "object",
+      "properties": {
+        "company": { "type": "string" },
+        "industry": { "type": "string" },
+        "contact": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "interest": { "type": "string" },
+        "packages": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["company", "contact", "email"]
+    },
+    "sponsorshipProposal": {
+      "title": "Sponsorship Proposal",
+      "description": "A proposal matching a club with a potential sponsor.",
+      "type": "object",
+      "properties": {
+        "clubId": { "type": "string" },
+        "clubName": { "type": "string" },
+        "sponsorLeadId": { "type": "string" },
+        "sponsorLeadName": { "type": "string" },
+        "status": { "type": "string", "enum": ["proposed", "accepted", "rejected"] },
+        "proposedAt": { "type": "string", "format": "date-time" },
+        "proposedBy": { "type": "string" }
+      },
+      "required": ["clubId", "sponsorLeadId", "status", "proposedAt"]
+    },
+    "coupon": {
+      "title": "Coupon",
+      "description": "Represents a discount coupon for SaaS subscriptions.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "description": "The unique coupon code." },
+        "discountType": { "type": "string", "enum": ["percentage", "fixed"], "description": "The type of discount." },
+        "discountValue": { "type": "number", "description": "The value of the discount (e.g., 20 for 20% or 50 for 50 CHF)." },
+        "validUntil": { "type": "string", "format": "date-time", "description": "The expiration date of the coupon." },
+        "isActive": { "type": "boolean", "default": true, "description": "Whether the coupon is currently active." },
+        "usageCount": { "type": "number", "default": 0, "description": "How many times the coupon has been used." },
+        "maxUsage": { "type": "number", "description": "Maximum number of times the coupon can be used." },
+        "usedBy": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of club IDs that have used this coupon."
+        }
+      },
+      "required": ["code", "discountType", "discountValue", "validUntil", "maxUsage"]
+    },
+    "provider": {
+      "title": "Provider",
+      "description": "Represents a provider for camps, bootcamps or tournaments.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "website": { "type": "string", "format": "uri" },
+        "instagram": { "type": "string", "format": "uri" },
+        "facebook": { "type": "string", "format": "uri" },
+        "regions": { "type": "array", "items": { "type": "string" }},
+        "facilities": { "type": "array", "items": { "$ref": "#/entities/sportsFacility" }},
+        "commission": { "type": "string" },
+        "type": { "type": "string", "enum": ["Trainingslager", "Bootcamp", "Turnier"] }
+      },
+      "required": ["name", "contact", "email", "regions", "facilities", "commission"]
+    },
+    "sportsFacility": {
+      "title": "Sports Facility",
+      "description": "Represents a sports facility.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "description": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" }},
+        "images": { "type": "array", "items": { "type": "string", "format": "uri" }},
+        "rating": { "type": "number" },
+        "contactEmail": { "type": "string", "format": "email" },
+        "contactPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "pitchDetails": {
+          "type": "object",
+          "properties": {
+            "naturalGrass": { "type": "number" },
+            "artificialGrass": { "type": "number" },
+            "smallPitches": { "type": "number" }
+          }
+        },
+        "reviews": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "author": { "type": "string" },
+              "rating": { "type": "number" },
+              "comment": { "type": "string" },
+              "date": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "required": ["name", "location", "features"]
+    },
+    "bootcamp": {
+      "title": "Bootcamp",
+      "description": "A football bootcamp event.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "region": { "type": "string" },
+        "status": { "type": "string", "enum": ["Entwurf", "Online", "In Durchführung", "Abgeschlossen"] },
+        "program": {
+          "type": "array",
+          "items": { "$ref": "#/entities/dailyProgram" }
+        }
+      }
+    },
+    "dailyProgram": {
+        "title": "Daily Program",
+        "description": "A schedule for a single day in a bootcamp.",
+        "type": "object",
+        "properties": {
+            "day": { "type": "string" },
+            "schedule": {
+                "type": "array",
+                "items": { "$ref": "#/entities/programItem" }
+            }
+        }
+    },
+    "programItem": {
+        "title": "Program Item",
+        "description": "A single item in a daily schedule.",
+        "type": "object",
+        "properties": {
+            "time": { "type": "string" },
+            "activity": { "type": "string" },
+            "location": { "type": "string" },
+            "focus": { "type": "string" }
+        }
+    },
+    "clubPlayerSearch": {
+      "title": "Club Player Search",
+      "description": "Represents a club's search for a player.",
+      "type": "object",
+      "properties": {
+        "clubId": { "type": "string" },
+        "clubName": { "type": "string" },
+        "position": { "type": "string" },
+        "ageGroup": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["open", "filled", "closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clubId", "clubName", "position", "ageGroup", "status", "createdAt"]
+    },
+    "playerSuggestion": {
+      "title": "Player Suggestion",
+      "description": "A suggestion of a player for a specific team.",
+      "type": "object",
+      "properties": {
+        "playerIdentifier": { "type": "string" },
+        "playerName": { "type": "string" },
+        "clubId": { "type": "string" },
+        "clubName": { "type": "string" },
+        "teamName": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined", "invited"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["playerName", "clubId", "teamName", "status", "createdAt"]
+    },
+    "chatRoom": {
+      "title": "Chat Room",
+      "description": "A private or group chat room.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "description": "The ID of the user who owns/manages the chat (e.g., Club-Admin or Coach)." },
+        "participantIds": { "type": "array", "items": { "type": "string" }},
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        },
+        "isGroupChat": { "type": "boolean" },
+        "groupName": { "type": "string" },
+        "clubId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastMessage": { "$ref": "#/entities/chatMessage" }
+      },
+      "required": ["participantIds", "isGroupChat"]
+    },
+    "chatMessage": {
+      "title": "Chat Message",
+      "description": "A single message in a chat room.",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["senderId", "text", "timestamp"]
+    },
+    "notification": {
+      "title": "Notification",
+      "description": "A notification for a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The ID of the user who receives the notification." },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "link": { "type": "string", "format": "uri", "description": "A link to the relevant page in the app." },
+        "read": { "type": "boolean", "default": false },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "createdAt"]
+    },
+     "contract": {
+        "title": "Contract",
+        "description": "Represents a player's or staff member's contract with the club.",
+        "type": "object",
+        "properties": {
+            "memberId": { "type": "string" },
+            "name": { "type": "string" },
+            "from": { "type": "string", "format": "date" },
+            "to": { "type": "string", "format": "date" },
+            "status": { "type": "string", "enum": ["Aktiv", "Abgelaufen", "Entwurf"] },
+            "clauses": { "type": "array", "items": { "type": "string" } },
+            "financials": {
+                "type": "object",
+                "properties": {
+                    "salary": { "type": "number" },
+                    "goalBonus": { "type": "number" },
+                    "assistBonus": { "type": "number" },
+                    "cleanSheetBonus": { "type": "number" }
+                }
+            },
+            "goals": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "label": { "type": "string" },
+                        "current": { "type": "number" },
+                        "target": { "type": "number" },
+                        "icon": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "required": ["memberId", "name", "from", "to", "status"]
+    },
+     "medicalContact": {
+      "title": "Medical Contact",
+      "description": "Represents a contact in the medical network (doctor, physio, etc.).",
+      "type": "object",
+      "properties": {
+        "salutation": { "type": "string" },
+        "title": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "contactPerson": { "type": "string" },
+        "specialty": { "type": "string" },
+        "address": { 
+            "type": "object",
+            "properties": {
+                "street": { "type": "string" },
+                "zip": { "type": "string" },
+                "city": { "type": "string" }
+            }
+        },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "website": { "type": "string", "format": "uri" },
+        "instagram": { "type": "string", "format": "uri" },
+        "linkedin": { "type": "string", "format": "uri" },
+        "facebook": { "type": "string", "format": "uri" },
+        "notes": { "type": "string" },
+        "agreement": {
+            "type": "object",
+            "properties": {
+                "financial": { "type": "string" },
+                "other": { "type": "string" }
+            }
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string", "format": "date-time" },
+              "user": { "type": "string", "description": "Name of the player who contacted them." }
+            }
+          }
+        }
+      },
+      "required": ["firstName", "lastName", "specialty"]
+    },
+    "amigoalContract": {
+        "title": "Amigoal Contract",
+        "description": "Represents a contract between Amigoal and a partner (club, provider, etc.).",
+        "type": "object",
+        "properties": {
+            "partnerId": { "type": "string" },
+            "partnerName": { "type": "string" },
+            "partnerType": { "type": "string", "enum": ["Club", "Provider", "Scout", "Other"] },
+            "contractType": { "type": "string" },
+            "startDate": { "type": "string", "format": "date" },
+            "endDate": { "type": "string", "format": "date" },
+            "status": { "type": "string", "enum": ["Active", "Expired", "Terminated", "Draft"] },
+            "monthlyFee": { "type": "number" },
+            "commissionRate": { "type": "number" },
+            "documentUrl": { "type": "string", "format": "uri" },
+            "notes": { "type": "string" }
+        },
+        "required": ["partnerId", "partnerName", "partnerType", "contractType", "startDate", "endDate", "status"]
+    },
+    "commissionInvoice": {
+      "title": "Commission Invoice",
+      "description": "Represents a commission invoice for Amigoal from a provider.",
+      "type": "object",
+      "properties": {
+        "providerId": { "type": "string" },
+        "providerName": { "type": "string" },
+        "bootcampId": { "type": "string" },
+        "bootcampName": { "type": "string" },
+        "registrationId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "bookingAmount": { "type": "number" },
+        "commissionAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Offen", "Bezahlt"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["providerId", "bootcampId", "bookingAmount", "commissionAmount", "status"]
+    }
+  },
+  "auth": {
+    "providers": ["anonymous", "google.com", "password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+        "schema": { "$ref": "#/entities/userProfile" },
+        "description": "Stores public user profile information."
+    },
+    "/amigoalStaff/{staffId}": {
+      "schema": { "$ref": "#/entities/amigoalStaff" },
+      "description": "Stores internal Amigoal staff members."
+    },
+    "/amigoalContracts/{contractId}": {
+      "schema": { "$ref": "#/entities/amigoalContract" },
+      "description": "Stores contracts between Amigoal and its partners."
+    },
+    "/commissionInvoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/commissionInvoice" },
+      "description": "Stores commission invoices due to Amigoal."
+    },
+    "/countries/{countryId}": {
+      "schema": { "$ref": "#/entities/country" },
+      "description": "Stores all countries."
+    },
+    "/associations/{associationId}": {
+      "schema": { "$ref": "#/entities/association" },
+      "description": "Stores all football associations."
+    },
+    "/clubs/{clubId}": {
+      "schema": { "$ref": "#/entities/club" },
+      "description": "Stores all clubs managed by the platform. Authenticated users can read this collection."
+    },
+    "/clubs": {
+        "schema": { "$ref": "#/entities/club" },
+        "description": "The collection of all clubs. Authenticated users can query this."
+    },
+    "/members/{memberId}": {
+        "schema": { "$ref": "#/entities/member" },
+        "description": "Stores all members of all clubs."
+    },
+    "/members": {
+        "schema": { "$ref": "#/entities/member" },
+        "description": "The collection of all members. Authenticated users can query this to find their profile."
+    },
+    "/investors/{investorId}": {
+      "schema": { "$ref": "#/entities/investor" },
+      "description": "Stores all investors in the Amigoal platform."
+    },
+    "/polls/{pollId}": {
+      "schema": { "$ref": "#/entities/poll" },
+      "description": "Stores all polls created in the application."
+    },
+    "/teamCategories/{categoryId}": {
+        "schema": { "$ref": "#/entities/teamCategory" },
+        "description": "Stores global team categories."
+    },
+    "/sponsorLeads/{leadId}": {
+      "schema": { "$ref": "#/entities/sponsorLead" },
+      "description": "Stores potential sponsor leads."
+    },
+    "/sponsorshipProposals/{proposalId}": {
+      "schema": { "$ref": "#/entities/sponsorshipProposal" },
+      "description": "Stores sponsorship proposals matching clubs and sponsors."
+    },
+    "/coupons/{couponId}": {
+      "schema": { "$ref": "#/entities/coupon" },
+      "description": "Stores all discount coupons for the SaaS platform."
+    },
+    "/bootcampProviders/{providerId}": {
+      "schema": { "$ref": "#/entities/provider" },
+      "description": "Stores all bootcamp providers."
+    },
+    "/trainingCampProviders/{providerId}": {
+      "schema": { "$ref": "#/entities/provider" },
+      "description": "Stores all training camp providers."
+    },
+    "/bootcamps/{bootcampId}": {
+        "schema": { "$ref": "#/entities/bootcamp" },
+        "description": "Stores all bootcamp events."
+    },
+    "/clubPlayerSearches/{searchId}": {
+      "schema": { "$ref": "#/entities/clubPlayerSearch" },
+      "description": "Stores active player searches from clubs."
+    },
+    "/playerSuggestions/{suggestionId}": {
+      "schema": { "$ref": "#/entities/playerSuggestion" },
+      "description": "Stores player suggestions made to clubs."
+    },
+    "/chatRooms/{roomId}": {
+      "schema": { "$ref": "#/entities/chatRoom" },
+      "description": "Stores all chat rooms."
+    },
+    "/chatRooms/{roomId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/chatMessage" },
+      "description": "Stores messages for a specific chat room."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/notification" },
+      "description": "Stores a single notification for a specific user. The user can read their own notifications."
+    },
+     "/members/{memberId}/contracts/{contractId}": {
+        "schema": { "$ref": "#/entities/contract" },
+        "description": "Stores contracts for a specific member."
+    },
+    "/medicalContacts/{contactId}": {
+      "schema": { "$ref": "#/entities/medicalContact" },
+      "description": "Stores all contacts in the medical network."
+    }
+  }
+}

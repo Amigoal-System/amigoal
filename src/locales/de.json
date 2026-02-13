@@ -1,0 +1,200 @@
+
+
+{
+    "login": {
+        "title": "Willkommen bei Amigoal",
+        "description": "Geben Sie Ihre Anmeldedaten ein, um auf Ihr Konto zuzugreifen",
+        "usernameLabel": "Username",
+        "passwordLabel": "Passwort",
+        "forgotPassword": "Passwort vergessen?",
+        "loginButton": "Anmelden",
+        "orContinueWith": "Oder weiter mit",
+        "noAccount": "Sie haben noch kein Konto?",
+        "signUp": "Registrieren",
+        "quickLogins": "Schnell-Logins (zum Testen)"
+    },
+    "register_page": {
+        "title": "Verein registrieren",
+        "description": "Starten Sie mit Ihrem Verein auf Amigoal in nur wenigen Schritten",
+        "backButton": "Zurück",
+        "nextButton": "Weiter",
+        "finishButton": "Registrierung abschliessen",
+        "step1": {
+            "label": "Vereinsinfo",
+            "description": "Name & Subdomain",
+            "clubNameLabel": "Name des Vereins",
+            "subdomainLabel": "Wunsch-Subdomain",
+            "subdomainTaken": "Diese Subdomain ist bereits vergeben.",
+            "subdomainErrorTitle": "Fehler bei Subdomain-Prüfung",
+            "subdomainErrorDescription": "Konnte nicht prüfen, ob die Subdomain verfügbar ist."
+        },
+        "step2": {
+            "label": "Ihr Account",
+            "description": "Persönliche Daten",
+            "fullNameLabel": "Ihr voller Name",
+            "emailLabel": "Ihre E-Mail",
+            "passwordLabel": "Passwort"
+        },
+        "step3": {
+            "label": "Paketwahl",
+            "description": "Funktionen auswählen"
+        },
+        "step4": {
+            "label": "Bestätigung",
+            "description": "Angaben prüfen",
+            "almostDoneTitle": "Fast geschafft!",
+            "checkInfo": "Bitte überprüfen Sie Ihre Angaben, bevor Sie die Registrierung abschliessen.",
+            "clubLabel": "Verein",
+            "yourNameLabel": "Ihr Name",
+            "yourEmailLabel": "Ihre E-Mail",
+            "packageLabel": "Paket"
+        },
+        "toast": {
+            "successTitle": "Verein erfolgreich registriert!",
+            "successDescription": "{CLUB_NAME} wurde erfolgreich hinzugefügt.",
+            "errorTitle": "Fehler bei der Registrierung",
+            "errorDescription": "Bitte versuchen Sie es später erneut."
+        }
+    },
+    "about_page": {
+        "subtitle": "ENTDECKEN SIE UNSERE GESCHICHTE",
+        "title": "Über Uns",
+        "paragraph": "Wir sind ein leidenschaftliches Team aus Entwicklern, Designern und Fussball-Enthusiasten, das sich zum Ziel gesetzt hat, die Vereinsverwaltung zu revolutionieren. Mit Liebe zum Detail und dem Streben nach Exzellenz verwandeln wir Visionen in Realität.",
+        "services": [
+            { "icon": "Users", "title": "Für Vereine", "description": "Zentrale Verwaltung aller Mitglieder, Teams und Finanzen. Sparen Sie Zeit und professionalisieren Sie Ihre Abläufe." },
+            { "icon": "Home", "title": "Für Trainer", "description": "Planen Sie Trainings, analysieren Sie Spiele und kommunizieren Sie direkt mit Ihrem Team – alles in einer App." },
+            { "icon": "Star", "title": "Für Spieler", "description": "Verfolgen Sie Ihre Leistungen, bleiben Sie mit dem Team in Kontakt und verwalten Sie Ihre Anwesenheiten und Aufgaben." },
+            { "icon": "PaintBucket", "title": "Für Eltern", "description": "Bleiben Sie immer auf dem Laufenden über die Termine und Erfolge Ihrer Kinder. Einfache Kommunikation mit Trainern und Verein." },
+            { "icon": "Ruler", "title": "Für Sponsoren", "description": "Verwalten Sie Ihre Engagements, entdecken Sie neue Möglichkeiten und verfolgen Sie die Wirkung Ihres Sponsorings." },
+            { "icon": "Building2", "title": "Für Verbände", "description": "Optimieren Sie die Kommunikation mit Ihren Vereinen und digitalisieren Sie administrative Prozesse." }
+        ],
+        "ctaTitle": "Bereit, Ihren Verein zu transformieren?",
+        "ctaDescription": "Lassen Sie uns gemeinsam Grosses schaffen."
+    },
+    "impressum_page": {
+        "companyName": "Trifti GmbH",
+        "additionalName": "(Trifti S.a.g.l.) (Trifti S.à.r.l.) (Trifti Ltd liab. Co)",
+        "address": "Spitzwiesenstrasse 1\n8957 Spreitenbach\nKanton Aargau, Schweiz",
+        "uid": "CHE-490.435.667",
+        "uidStatus": "Aktiv",
+        "addition": "HR/MWST",
+        "representative": "Burim Dervishi",
+        "contactEmail": "email@trifti.ch",
+        "disclaimer": "Der Autor übernimmt keinerlei Gewähr hinsichtlich der inhaltlichen Richtigkeit, Genauigkeit, Aktualität, Zuverlässigkeit und Vollständigkeit der Informationen. Haftungsansprüche gegen den Autor wegen Schäden materieller oder immaterieller Art, welche aus dem Zugriff oder der Nutzung bzw. Nichtnutzung der veröffentlichten Informationen, durch Missbrauch der Verbindung oder durch technische Störungen entstanden sind, werden ausgeschlossen."
+    },
+    "datenschutz_page": {
+        "title": "Datenschutzerklärung",
+        "last_updated": "Stand: {DATE}",
+        "sections": [
+            {
+                "title": "1. Verantwortlicher",
+                "content": "Verantwortlicher im Sinne der Datenschutzgesetze, insbesondere der EU-Datenschutzgrundverordnung (DSGVO), ist:\n\nTrifti GmbH\nSpitzwiesenstrasse 1\n8957 Spreitenbach\nSchweiz\n\nE-Mail: email@trifti.ch\nWebseite: https://www.amigoal.ch"
+            },
+            {
+                "title": "2. Allgemeine Hinweise",
+                "content": "Gestützt auf Artikel 13 der schweizerischen Bundesverfassung und die datenschutzrechtlichen Bestimmungen des Bundes (Datenschutzgesetz, DSG) hat jede Person Anspruch auf Schutz ihrer Privatsphäre sowie auf Schutz vor Missbrauch ihrer persönlichen Daten. Wir halten diese Bestimmungen ein. Persönliche Daten werden streng vertraulich behandelt und weder an Dritte verkauft noch weitergegeben."
+            },
+            {
+                "title": "3. Erfassung von Daten auf dieser Webseite",
+                "content": "Beim Zugriff auf unsere Webseiten werden folgende Daten in Logfiles gespeichert: IP-Adresse, Datum, Uhrzeit, Browser-Anfrage und allg. übertragene Informationen zum Betriebssystem resp. Browser. Diese Nutzungsdaten bilden die Basis für statistische, anonyme Auswertungen, sodass Trends erkennbar sind, anhand derer wir unsere Angebote entsprechend verbessern können."
+            },
+            {
+                "title": "4. Cookies",
+                "content": "Diese Webseite verwendet Cookies. Cookies sind kleine Textdateien, die beim Besuch dieser Webseite in Ihrem Computer dauerhaft oder temporär gespeichert werden. Zweck der Cookies ist insbesondere die Analyse der Nutzung dieser Webseite zur statistischen Auswertung sowie für kontinuierliche Verbesserungen. Sie können Cookies in den Einstellungen Ihres Browsers jederzeit ganz oder teilweise deaktivieren."
+            },
+            {
+                "title": "5. Ihre Rechte",
+                "content": "Sie haben das Recht, jederzeit Auskunft über Ihre bei uns gespeicherten Daten zu verlangen. Zudem können Sie die Berichtigung, Sperrung oder Löschung Ihrer Daten verlangen, sofern dem keine gesetzlichen Aufbewahrungspflichten entgegenstehen."
+            }
+        ]
+    },
+    "agb_page": {
+        "title": "Allgemeine Geschäftsbedingungen (AGB)",
+        "last_updated": "Stand: {DATE}",
+        "sections": [
+            {
+                "title": "1. Geltungsbereich",
+                "content": "Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge, die über die Plattform Amigoal der Trifti GmbH abgeschlossen werden."
+            },
+            {
+                "title": "2. Vertragsabschluss",
+                "content": "Die Darstellung der Produkte und Dienstleistungen stellt kein rechtlich bindendes Angebot dar. Durch Anklicken des Bestellbuttons geben Sie eine verbindliche Bestellung ab. Der Vertrag kommt mit der Annahme Ihrer Bestellung durch uns zustande."
+            },
+            {
+                "title": "3. Preise und Zahlungsbedingungen",
+                "content": "Alle Preise verstehen sich in Schweizer Franken (CHF) exklusive der gesetzlichen Mehrwertsteuer. Die Zahlung erfolgt über die auf der Plattform angebotenen Zahlungsmethoden."
+            }
+        ]
+    },
+    "cookie_banner": {
+        "enabled": true,
+        "title": "Diese Seite verwendet Cookies",
+        "message": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Indem Sie auf \"Akzeptieren\" klicken, stimmen Sie unserer Verwendung von Cookies zu.",
+        "acceptText": "Alle akzeptieren",
+        "customizeText": "Anpassen",
+        "icon": "cookie",
+        "privacyHref": "/datenschutz",
+        "termsHref": "/agb"
+    },
+    "common": {
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "close": "Schliessen",
+        "confirm": "Bestätigen",
+        "add": "Hinzufügen",
+        "new": "Neu",
+        "name": "Name",
+        "description": "Beschreibung",
+        "status": "Status",
+        "actions": "Aktionen",
+        "all": "Alle",
+        "from": "Von",
+        "to": "Bis",
+        "date": "Datum",
+        "time": "Zeit",
+        "details": "Details",
+        "team": "Mannschaft",
+        "back": "Zurück",
+        "next": "Weiter",
+        "send": "Senden",
+        "search": "Suchen..."
+    },
+    "dashboard_nav": {
+        "dashboard": "Dashboard",
+        "clubs": "Vereine",
+        "leads": "Leads",
+        "referrals": "Referrals",
+        "sponsoring": "Sponsoring",
+        "newsletter": "Newsletter",
+        "members": "Mitglieder",
+        "teams": "Mannschaften",
+        "coaches": "Trainer",
+        "website": "Webseite",
+        "training": "Training",
+        "matches": "Spiele",
+        "tournaments": "Turniere",
+        "live_ticker": "Live Ticker",
+        "statistics": "Leistungen",
+        "finances": "Finanzen",
+        "invoices": "Rechnungen",
+        "expenses": "Spesen",
+        "team_cash": "Mannschaftskasse",
+        "settings": "Einstellungen"
+    },
+    "dashboard_teams": {
+        "title": "Übersicht Mannschaften",
+        "description": "Verwalten und überblicken Sie alle Mannschaften Ihres Vereins.",
+        "add_team": "Neue Mannschaft",
+        "active": "Aktive",
+        "women": "Damen",
+        "juniors": "Junioren",
+        "seniors_veterans": "Senioren / Veteranen",
+        "players": "Spieler",
+        "trainer": "Trainer",
+        "league": "Liga",
+        "membership_rate": "Mitgliedschaft %",
+        "training_attendance": "Trainingsbesuche %"
+    }
+}

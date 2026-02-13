@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Allow public read for specific collections if needed (e.g., public blog posts)
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if request.auth.uid != null; // Example: Only authenticated users can write
+    }
+
+    // Members can only be read/written by authenticated users.
+    // More specific rules would be needed here (e.g., only admins can write).
+    match /members/{memberId} {
+      allow read, write: if request.auth.uid != null;
+    }
+
+    // Users can only manage their own data
+    match /users/{userId} {
+      allow read, update, delete: if request.auth.uid == userId;
+      allow create: if request.auth.uid != null;
+    }
+    
+    // Teams can be read by any authenticated user, but only written by admins (example)
+    match /teams/{teamId} {
+      allow read: if request.auth.uid != null;
+      // In a real app, you would check for an admin role:
+      // allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin';
+      allow write: if request.auth.uid != null; // Simplified for now
+    }
+
+    // Allow users to read/write their own notifications
+    match /notifications/{notificationId} {
+      allow read, write, delete: if request.auth.uid == resource.data.userId;
+    }
+  }
+}

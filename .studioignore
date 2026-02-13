@@ -1,0 +1,33 @@
+# Ignore Git repo entirely
+.git/
+.gitignore
+
+# Node modules & build folders
+node_modules/
+.next/
+dist/
+build/
+out/
+.cache/
+
+# Logs, temp and backups
+*.log
+*.tmp
+*.bak
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Dependencies and lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE and workspace files
+.vscode/
+.idea/
+workspace/
+
+# Large reports
+heavy_files.txt

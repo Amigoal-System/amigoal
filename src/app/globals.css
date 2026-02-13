@@ -1,0 +1,461 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: var(--font-body, 'PT Sans', sans-serif);
+}
+
+@layer base {
+  :root {
+    --background: 218 93% 95%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 217 89% 61%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 34% 90%;
+    --secondary-foreground: 224 71% 4%;
+    --muted: 220 20% 93%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 122 53% 46%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 28% 83%;
+    --input: 215 28% 83%;
+    --ring: 217 89% 61%;
+    --radius: 0.5rem;
+    --chart-1: 217 89% 61%;
+    --chart-2: 122 53% 46%;
+    --chart-3: 28 100% 67%;
+    --chart-4: 198 93% 60%;
+    --chart-5: 343 89% 61%;
+
+    --sidebar: 220 15% 96%;
+    --sidebar-foreground: 224 71% 4%;
+    --sidebar-border: 215 28% 83%;
+    --sidebar-accent: 216 34% 90%;
+    --sidebar-accent-foreground: 224 71% 4%;
+    --sidebar-ring: 217 89% 61%;
+
+    --font-body: 'PT Sans', sans-serif;
+    --font-headline: 'PT Sans', sans-serif;
+    
+    --blue-300: 93 98% 79%;
+    --blue-400: 210 95% 66%;
+    --blue-500: 217 89% 61%;
+    --indigo-300: 226 95% 82%;
+    --violet-200: 249 84% 91%;
+    --black: 224 71% 4%;
+    --white: 0 0% 100%;
+    --transparent: 0 0% 100% / 0;
+  }
+ 
+  .dark {
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 89% 61%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 32.6% 17.5%;
+    --input: 217 32.6% 17.5%;
+    --ring: 216 34% 90%;
+    --chart-1: 217 89% 61%;
+    --chart-2: 122 53% 46%;
+    --chart-3: 28 100% 67%;
+    --chart-4: 198 93% 60%;
+    --chart-5: 343 89% 61%;
+    
+    --sidebar: 222 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-border: 217 32.6% 17.5%;
+    --sidebar-accent: 217 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 216 34% 90%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+    @keyframes aurora {
+      from {
+        background-position: 50% 50%, 50% 50%;
+      }
+      to {
+        background-position: 350% 50%, 350% 50%;
+      }
+    }
+
+    .loader {
+        --c: hsl(var(--primary));
+        position: relative;
+        font-size: 16px;
+        width: 1em;
+        height: 1em;
+    }
+
+    .loader .ph1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        animation: ph1 3s ease infinite;
+        clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em);
+    }
+
+    .loader .record {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 2em;
+        height: 2em;
+        background: var(--c);
+        border-radius: 999px;
+        animation: blink 1s step-end infinite;
+        transform: translate(-3.5em, -50%);
+    }
+
+    .loader .record-text {
+        position: absolute;
+        color: var(--c);
+        font-size: 2.2em;
+        font-weight: 700;
+        left: 50%;
+        top: 50%;
+        transform: translate(-0.5em, -50%);
+        width: 2em;
+        height: 1.5em;
+    }
+
+    .loader .ph2 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -4em);
+        width: 11em;
+        height: 7em;
+        perspective: 150px;
+        perspective-origin: 50% 0%;
+        transform-style: preserve-3d;
+        animation: ph2 3s ease-in-out infinite;
+    }
+
+    .loader .laptop-b {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 0.5em;
+        background: var(--c);
+        border-bottom-left-radius: 2em;
+        border-bottom-right-radius: 2em;
+        animation: ph2b 3s ease infinite;
+    }
+
+    .loader .laptop-t {
+        margin: 0 1.25em;
+        color: var(--c);
+        transform-origin: 50% 100%;
+        animation: ph2t 3s ease infinite;
+    }
+
+    .loader .icon {
+        position: absolute;
+        width: 4em;
+        height: 4em;
+        background: var(--c);
+        border-radius: 999px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transform-origin: center;
+        animation: icon 3s ease-in-out infinite;
+        isolation: isolate;
+        border-color: var(--c);
+        border-style: solid;
+        z-index: -1;
+    }
+
+    .loader .icon::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        border: 0.8em solid black;
+        box-sizing: border-box;
+        border-left-color: transparent !important;
+        border-bottom-color: transparent !important;
+        transform: translate(-50%, 2.5em) rotate(-45deg);
+        transform-origin: center;
+        animation: iconb 3s ease-in-out infinite;
+        z-index: -1;
+    }
+    
+    .loader .icon::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background: black;
+        width: 1em;
+        height: 2em;
+        box-sizing: border-box;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        animation: icona 3s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+        75% { opacity: 1; }
+    }
+
+    @keyframes ph1 {
+        25.5% { translate: 0 0; clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em); }
+        30%, to { opacity: 1; translate: 0 3em; clip-path: polygon(-4em 1em, 4em 1em, 4em 1em, -4em 1em); }
+        30.1% { opacity: 0; translate: 0 3em; }
+        92.4%, to { translate: 0 0; opacity: 0; clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em); }
+        92.5% { opacity: 1; clip-path: polygon(-4em -1em, -0.5em -1em, -0.5em 1em, -4em 1em); }
+        to { opacity: 1; clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em); }
+    }
+    
+    @keyframes ph2 {
+        0%, 15% { translate: 0 4em; }
+        0%, 29% { opacity: 0; }
+        30% { opacity: 1; }
+        40% { translate: 0 0; }
+        50% { translate: 0 0.5em; opacity: 1; }
+        50.1%, to { opacity: 0; }
+    }
+
+    @keyframes ph2t {
+        0%, 29% { transform: rotateX(-10deg); }
+        0%, 41.9% { stroke-dasharray: unset; }
+        42% { transform: rotateX(4deg); stroke-dasharray: 0 0 100; }
+        50% { transform: rotateX(-20deg); stroke-dasharray: 0 50 0 100; }
+    }
+
+    @keyframes ph2b {
+        42% { scale: 1 1; }
+        50% { scale: 0 1; }
+    }
+    
+    @keyframes icon {
+        0%, 15% { translate: 0 4.5em; width: 0; height: 0; }
+        0%, 29% { opacity: 0; }
+        30% { opacity: 1; }
+        40% { translate: 0 -0.75em; width: 4em; height: 4em; }
+        50% { translate: 0 0em; opacity: 1; background: var(--c); }
+        50.1% { border-width: 2em; background: black; }
+        65% { width: 4em; height: 4em; transform: translate(-50%, -50%); border-width: 4px; }
+        80%, to { width: 2em; height: 2em; translate: 0 0; transform: translate(-3.5em, -50%); border-width: 1em; background: black; }
+        80.1%, to { background: var(--c); }
+        84.9% { opacity: 1; }
+        85%, to { opacity: 0; }
+    }
+
+    @keyframes iconb {
+        20% { transform: translate(-50%, 2.5em) rotate(-45deg); }
+        50% { transform: translate(-50%, -25%) rotate(-45deg); border-color: black; }
+        65%, to { transform: translateY(0) scale(1) scaleX(1.5) translate(-60%, -50%) rotate(45deg); border-color: var(--c); }
+        85%, to { transform: translate(-40%, -50%) scale(0) scaleX(1.5) translate(-75%, -50%) rotate(45deg); }
+    }
+
+    @keyframes icona {
+        20% { transform: translate(-50%, 2.5em); }
+        50% { transform: translate(-50%, 0.4em); }
+        65%, to { transform: translate(-50%, 2.5em); }
+    }
+}
+
+@keyframes moveBackground {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 0% -1000%;
+  }
+}
+
+.add-to-cart {
+    --background-default: hsl(200 95% 90%); /* Hellblau */
+    --background-hover: hsl(210 95% 80%); /* Dunkleres Hellblau */
+    --background-scale: 1;
+    --text-color: hsl(210 95% 30%); /* Dunkelblau für Kontrast */
+    --text-o: 1;
+    --text-x: 12px;
+    --cart: hsl(210 95% 30%);
+    --cart-x: -48px;
+    --cart-y: 0px;
+    --cart-rotate: 0deg;
+    --cart-scale: .75;
+    --cart-clip: 0px;
+    --cart-clip-x: 0px;
+    --cart-tick-offset: 10px;
+    --cart-tick-color: #FF328B;
+    --shirt-y: -16px;
+    --shirt-scale: 0;
+    --shirt-color: hsl(200 95% 90%);
+    --shirt-logo: hsl(210 95% 30%);
+    --shirt-second-y: 24px;
+    --shirt-second-color: hsl(210 95% 30%);
+    --shirt-second-logo: #fff;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    outline: none;
+    background: none;
+    border: none;
+    padding: 12px 0;
+    width: 164px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    font-family: inherit;
+}
+.add-to-cart:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 5px;
+    transition: background .25s;
+    background: var(--background, var(--background-default));
+    transform: scaleX(var(--background-scale)) translateZ(0);
+}
+.add-to-cart:not(.active):hover {
+    --background: var(--background-hover);
+}
+.add-to-cart span {
+    display: block;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    color: var(--text-color);
+    opacity: var(--text-o);
+    transform: translateX(var(--text-x)) translateZ(0);
+}
+.add-to-cart svg {
+    display: block;
+    width: var(--svg-width, 24px);
+    height: var(--svg-height, 24px);
+    position: var(--svg-position, relative);
+    left: var(--svg-left, 0);
+    top: var(--svg-top, 0);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.add-to-cart svg path {
+    fill: var(--svg-fill, none);
+    stroke: var(--svg-stroke, none);
+    stroke-width: var(--svg-stroke-width, 2);
+}
+
+.add-to-cart .morph {
+    --svg-width: 64px;
+    --svg-height: 13px;
+    --svg-left: 50%;
+    --svg-top: -12px;
+    --svg-position: absolute;
+    --svg-fill: var(--background, var(--background-default));
+    transition: fill .25s;
+    pointer-events: none;
+    margin-left: -32px;
+}
+.add-to-cart .shirt,
+.add-to-cart .cart {
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+}
+.add-to-cart .shirt {
+    margin: -12px 0 0 -12px;
+    top: 0;
+    transform-origin: 50% 100%;
+    transform: translateY(var(--shirt-y)) scale(var(--shirt-scale));
+}
+.add-to-cart .shirt svg {
+    --svg-fill: var(--shirt-color);
+}
+.add-to-cart .shirt svg g {
+    --svg-fill: var(--svg-g-fill, var(--shirt-logo));
+}
+.add-to-cart .shirt svg.second {
+    --svg-fill: var(--shirt-second-color);
+    --svg-g-fill: var(--shirt-second-logo);
+    --svg-position: absolute;
+    clip-path: polygon(0 var(--shirt-second-y), 24px var(--shirt-second-y), 24px 24px, 0 24px);
+}
+.add-to-cart .cart {
+    --svg-width: 36px;
+    --svg-height: 26px;
+    --svg-stroke: var(--cart);
+    top: 10px;
+    margin-left: -18px;
+    transform: translate(var(--cart-x), var(--cart-y)) rotate(var(--cart-rotate)) scale(var(--cart-scale)) translateZ(0);
+}
+.add-to-cart .cart:before {
+    content: '';
+    display: block;
+    width: 22px;
+    height: 12px;
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    background: var(--cart);
+    clip-path: polygon(0 0, 22px 0, calc(22px - var(--cart-clip-x)) var(--cart-clip), var(--cart-clip-x) var(--cart-clip));
+}
+.add-to-cart .cart path.wheel {
+    --svg-stroke-width: 1.5;
+}
+.add-to-cart .cart path.tick {
+    --svg-stroke: var(--cart-tick-color);
+    stroke-dasharray: 10px;
+    stroke-dashoffset: var(--cart-tick-offset);
+}
+
+.dark .add-to-cart {
+    --background-default: hsl(200 95% 20%); /* Dunkleres Hellblau */
+    --background-hover: hsl(210 95% 30%); /* Noch dunkleres Hellblau */
+    --text-color: hsl(210 40% 98%); /* Heller Text für Kontrast */
+    --cart: hsl(210 40% 98%);
+    --cart-tick-color: #FF328B;
+    --shirt-color: hsl(200 95% 20%);
+    --shirt-logo: hsl(210 40% 98%);
+    --shirt-second-color: hsl(210 40% 98%);
+    --shirt-second-logo: hsl(200 95% 20%);
+}
