@@ -1,63 +1,147 @@
 
-'use client';
+'use server';
 /**
  * @fileOverview Genkit flows for managing polls using Firebase Firestore.
  */
-import { addDoc, collection, deleteDoc, doc, updateDoc, type Firestore } from 'firebase/firestore';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
+import { getDb } from '@/lib/firebase/server';
 import { PollSchema, type Poll } from './polls.types';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { firestore } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
-// Flow to add a new poll
-export const createPoll = (db: Firestore, pollData: Omit<Poll, 'id'>) => {
-    const newPoll = {
-        ...pollData,
-        createdAt: new Date().toISOString(),
-        voters: [],
+// Flow to get all polls
+export const getAllPolls = ai.defineFlow(
+  {
+    name: 'getAllPolls',
+    inputSchema: z.void().optional().nullable(),
+    outputSchema: z.array(PollSchema),
+  },
+  async () => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Polls module
+    if (!hasModuleAccess(context.role, 'Polls')) {
+      console.warn(`[getAllPolls] User ${context.email} with role ${context.role} denied access to Polls module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Umfragen anzuzeigen.");
     }
 
-    addDoc(collection(db, 'polls'), newPoll)
-        .catch(async (serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: 'polls',
-                operation: 'create',
-                requestResourceData: newPoll
-            } satisfies SecurityRuleContext);
-            errorEmitter.emit('permission-error', permissionError);
-        });
-};
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database service is not available.");
+    }
+    
+    try {
+        const snapshot = await db.collection("polls").orderBy('createdAt', 'desc').get();
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Poll[];
+    } catch (error) {
+        console.error("Error fetching polls:", error);
+        return [];
+    }
+  }
+);
+
+// Flow to create a new poll
+export const createPoll = ai.defineFlow(
+  {
+    name: 'createPoll',
+    inputSchema: z.object({
+        question: z.string(),
+        options: z.array(z.object({ text: z.string(), votes: z.number() })),
+        clubId: z.string().optional().nullable(),
+        createdBy: z.string().optional().nullable(),
+    }),
+    outputSchema: z.string(),
+  },
+  async ({ question, options, clubId, createdBy }) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Polls module
+    if (!hasModuleAccess(context.role, 'Polls')) {
+      console.warn(`[createPoll] User ${context.email} with role ${context.role} denied access to Polls module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Umfragen zu erstellen.");
+    }
+
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database service is not available.");
+    }
+    
+    const newPoll = {
+        question,
+        options,
+        createdAt: new Date().toISOString(),
+        voters: [],
+        clubId: clubId || context.clubId,
+        createdBy: createdBy || context.userId,
+    };
+    
+    const docRef = await db.collection("polls").add(newPoll);
+    return docRef.id;
+  }
+);
 
 // Flow to vote on a poll
-export const voteOnPoll = (db: Firestore, { pollId, optionId, userId }: { pollId: string, optionId: number, userId: string }) => {
-    const pollRef = doc(db, 'polls', pollId);
+export const voteOnPoll = ai.defineFlow(
+  {
+    name: 'voteOnPoll',
+    inputSchema: z.object({
+        pollId: z.string(),
+        optionIndex: z.number(),
+    }),
+    outputSchema: z.string(),
+  },
+  async ({ pollId, optionIndex }) => {
+    const context = await getCurrentContext();
     
-    // This is a simplified update. A real-world scenario would use a transaction
-    // to prevent race conditions. For this demo, we assume the component fetches
-    // the latest poll data before updating.
-    updateDoc(pollRef, {
-        [`options.${optionId - 1}.votes`]: 1, // Simplified increment, should be FieldValue.increment(1)
-        voters: [userId] // Simplified, should be FieldValue.arrayUnion(userId)
-    }).catch(async (serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: pollRef.path,
-            operation: 'update',
-            requestResourceData: { voters: [userId], [`options.${optionId-1}.votes`]: 'INCREMENT(1)' }
-        } satisfies SecurityRuleContext);
-        errorEmitter.emit('permission-error', permissionError);
-    });
-};
+    // RBAC: Check if user has access to Polls module
+    if (!hasModuleAccess(context.role, 'Polls')) {
+      console.warn(`[voteOnPoll] User ${context.email} with role ${context.role} denied access to Polls module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, abzustimmen.");
+    }
 
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database service is not available.");
+    }
+    
+    const pollRef = db.collection("polls").doc(pollId);
+    
+    await pollRef.update({
+        [`options.${optionIndex}.votes`]: firestore.FieldValue.increment(1),
+        voters: firestore.FieldValue.arrayUnion(context.userId),
+    });
+    
+    return "Vote recorded successfully";
+  }
+);
 
 // Flow to delete a poll
-export const deletePoll = (db: Firestore, pollId: string) => {
-    const pollRef = doc(db, 'polls', pollId);
-    deleteDoc(pollRef)
-      .catch(async (serverError) => {
-            const permissionError = new FirestorePermissionError({
-                path: pollRef.path,
-                operation: 'delete',
-            } satisfies SecurityRuleContext);
-            errorEmitter.emit('permission-error', permissionError);
-        });
-};
+export const deletePoll = ai.defineFlow(
+  {
+    name: 'deletePoll',
+    inputSchema: z.string(),
+    outputSchema: z.string(),
+  },
+  async (pollId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Only admins can delete polls
+    if (context.role !== 'Super-Admin' && context.role !== 'Club-Admin' && context.role !== 'Board') {
+      console.warn(`[deletePoll] User ${context.email} with role ${context.role} denied access to delete polls`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Umfragen zu löschen.");
+    }
+
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database service is not available.");
+    }
+    
+    await db.collection("polls").doc(pollId).delete();
+    return "Poll deleted successfully";
+  }
+);
