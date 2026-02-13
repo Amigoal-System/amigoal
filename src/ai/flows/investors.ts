@@ -6,18 +6,37 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { InvestorSchema, type Investor } from './investors.types';
 import type { admin } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all investors
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all investors with RBAC
 export const getAllInvestors = ai.defineFlow(
   {
     name: 'getAllInvestors',
     outputSchema: z.array(InvestorSchema),
   },
   async () => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Investors module
+    if (!hasModuleAccess(context.role, 'Investors')) {
+      console.warn(`[getAllInvestors] User ${context.email} with role ${context.role} denied access to Investors module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Investoren anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
     }
+    
+    // Only Super-Admin can see all investors
+    if (context.role !== 'Super-Admin') {
+        return [];
+    }
+    
     try {
       const collectionRef = db.collection("investors");
       const snapshot = await collectionRef.orderBy('name').get();

@@ -9,6 +9,11 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { CouponSchema, type Coupon } from './coupons.types';
 import type { admin } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 export const getAllCoupons = ai.defineFlow(
   {
@@ -16,8 +21,22 @@ export const getAllCoupons = ai.defineFlow(
     outputSchema: z.array(CouponSchema),
   },
   async () => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Coupons module
+    if (!hasModuleAccess(context.role, 'Coupons')) {
+      console.warn(`[getAllCoupons] User ${context.email} with role ${context.role} denied access to Coupons module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Coupons anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("DB not available");
+    
+    // Only Super-Admin can see all coupons
+    if (context.role !== 'Super-Admin') {
+        return [];
+    }
+    
     const snapshot = await db.collection('coupons').get();
     return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Coupon[];
   }
