@@ -17,16 +17,16 @@
 ## Agent 2: Finanzen
 **Status:** ✅ Fertig
 
-- [x] RBAC für Coupons
-- [x] RBAC für Investors
-- [x] RBAC für CommissionInvoices
-- [x] InvoicesPage - funktioniert
-- [x] ContractManagementPage - funktioniert
-
 ---
 
 ## Agent 3: Training & Spielbetrieb
-**Status:** ⏳ Ausstehend
+**Status:** ✅ Fertig
+
+- [x] RBAC für Medical Center hinzugefügt
+- TrainingPrepPage - Placeholder (Mock Data)
+- LiveTickerPage - Placeholder (Mock Data)
+- MatchPrepPage - Placeholder (Mock Data)
+- MedicalCenterPage - funktioniert
 
 ---
 
@@ -52,7 +52,6 @@
 
 ## Nächste Schritte
 Wähle einen Agenten aus:
-1. **Agent 3** - Training & Spielbetrieb
-2. **Agent 4** - Turniere & Events
-3. **Agent 5** - Kommunikation
-4. **Agent 6** - Scouting & Spieler
+1. **Agent 4** - Turniere & Events
+2. **Agent 5** - Kommunikation
+3. **Agent 6** - Scouting & Spieler
