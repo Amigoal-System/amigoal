@@ -30,21 +30,20 @@
 ---
 
 ## Agent 5: Kommunikation
-**Status:** ⚠️ Teilweise
+**Status:** ✅ Fertig
 
-**Status:**
-- NewsletterPage - funktioniert mit RBAC
-- ChatPage - Nutzt Firebase Client SDK direkt (⚠️)
-- Polls - Client-side (⚠️)
-
-**Empfehlung für Chat:**
-- Chat sollte über Server-Flows laufen für bessere RBAC
-- Alternativ: RBAC über Firestore Security Rules sicherstellen
+- [x] Chat RBAC über Server-Flows ✅
+- [x] Polls RBAC über Server-Flows ✅
+- NewsletterPage - funktioniert
 
 ---
 
 ## Agent 6: Scouting & Spieler
-**Status:** ⏳ Ausstehend
+**Status:** ✅ Fertig
+
+- [x] RBAC für Watchlist ✅
+- [x] RBAC für ClubPlayerSearches ✅
+- [x] RBAC für Highlights ✅
 
 ---
 
@@ -53,6 +52,9 @@
 
 ---
 
-## Nächste Schritte
-Wähle einen Agenten aus:
-1. **Agent 6** - Scouting & Spieler
+## ✅ Alle Agenten fertig!
+
+Das RBAC-System ist nun vollständig implementiert:
+- 25+ AI-Flows mit RBAC
+- Firestore Security Rules
+- Chat & Polls jetzt als Server-Flows
