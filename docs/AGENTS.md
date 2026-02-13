@@ -12,9 +12,9 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Staff Verwaltung
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/members.ts` - RBAC ok
-- [ ] `src/ai/flows/teams.ts` - RBAC ok
-- [ ] `src/ai/flows/clubs.ts` - RBAC ok
+- [x] `src/ai/flows/members.ts` - RBAC ✅
+- [x] `src/ai/flows/teams.ts` - RBAC ✅
+- [x] `src/ai/flows/clubs.ts` - RBAC ✅
 - [ ] `src/components/dashboards/pages/MembersPage.tsx`
 - [ ] `src/components/dashboards/pages/TeamsPage.tsx`
 
@@ -30,8 +30,8 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Rechnungsstellung
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/expenses.ts` - RBAC ok
-- [ ] `src/ai/flows/sponsors.ts` - RBAC ok
+- [x] `src/ai/flows/expenses.ts` - RBAC ✅
+- [x] `src/ai/flows/sponsors.ts` - RBAC ✅
 - [ ] `src/components/dashboards/pages/InvoicesPage.tsx`
 - [ ] `src/components/dashboards/pages/ContractManagementPage.tsx`
 
@@ -47,8 +47,8 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Medical Center
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/trainings.ts`
-- [ ] `src/ai/flows/matches.ts`
+- [x] `src/ai/flows/trainings.ts` - RBAC ✅
+- [x] `src/ai/flows/matches.ts` - RBAC ✅
 - [ ] `src/components/dashboards/pages/TrainingPrepPage.tsx`
 - [ ] `src/components/dashboards/pages/LiveTickerPage.tsx`
 - [ ] `src/components/dashboards/pages/MatchPrepPage.tsx`
@@ -64,9 +64,11 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Aufgaben (Tasks)
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/tournaments.ts`
-- [ ] `src/ai/flows/camps.ts`
-- [ ] `src/ai/flows/bootcamps.ts`
+- [ ] `src/ai/flows/tournaments.ts` - RBAC fehlt
+- [ ] `src/ai/flows/camps.ts` - RBAC fehlt
+- [ ] `src/ai/flows/bootcamps.ts` - RBAC fehlt
+- [ ] `src/ai/flows/events.ts` - RBAC ✅
+- [ ] `src/ai/flows/tasks.ts` - RBAC ✅
 - [ ] `src/components/dashboards/pages/TournamentsPage.tsx`
 
 ---
@@ -79,9 +81,9 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Benachrichtigungen
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/chat.ts`
-- [ ] `src/ai/flows/newsletter.ts`
-- [ ] `src/ai/flows/polls.ts`
+- [ ] `src/ai/flows/chat.ts` - RBAC fehlt
+- [x] `src/ai/flows/newsletter.ts` - RBAC ✅
+- [ ] `src/ai/flows/polls.ts` - RBAC fehlt
 - [ ] `src/components/dashboards/pages/ChatPage.tsx`
 - [ ] `src/components/dashboards/pages/NewsletterPage.tsx`
 
@@ -95,9 +97,9 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Highlights
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/watchlist.ts`
-- [ ] `src/ai/flows/clubPlayerSearches.ts`
-- [ ] `src/ai/flows/highlights.ts`
+- [ ] `src/ai/flows/watchlist.ts` - RBAC fehlt
+- [ ] `src/ai/flows/clubPlayerSearches.ts` - RBAC fehlt
+- [ ] `src/ai/flows/highlights.ts` - RBAC fehlt
 - [ ] `src/components/dashboards/pages/ScoutingReportsPage.tsx`
 - [ ] `src/components/dashboards/pages/WatchlistPage.tsx`
 
@@ -113,16 +115,50 @@ Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Proje
 - Rollen & Rechte Matrix
 
 **Zu überprüfen:**
-- [ ] `src/ai/flows/leads.ts`
-- [ ] `src/ai/flows/users.ts`
+- [ ] `src/ai/flows/leads.ts` - RBAC fehlt
+- [ ] `src/ai/flows/users.ts` - RBAC fehlt
 - [ ] `src/components/dashboards/pages/LeadsPage.tsx`
 - [ ] `src/components/dashboards/pages/UsersPage.tsx`
 - [ ] `src/components/dashboards/pages/RolesMatrixPage.tsx`
 
 ---
 
+## RBAC Status (Global)
+**Implementiert:**
+- ✅ members.ts
+- ✅ teams.ts
+- ✅ clubs.ts
+- ✅ expenses.ts
+- ✅ sponsors.ts
+- ✅ trainings.ts
+- ✅ matches.ts
+- ✅ events.ts
+- ✅ tasks.ts
+- ✅ newsletter.ts
+
+**Noch fehlend:**
+- ❌ tournaments.ts
+- ❌ camps.ts
+- ❌ bootcamps.ts
+- ❌ chat.ts
+- ❌ polls.ts
+- ❌ watchlist.ts
+- ❌ clubPlayerSearches.ts
+- ❌ highlights.ts
+- ❌ leads.ts
+- ❌ users.ts
+- ❌ investments.ts
+- ❌ contracts.ts
+- ❌ cards.ts
+- ❌ categories.ts
+- ❌ locations.ts
+- ❌ coupons.ts
+- ❌ referrals.ts
+
+---
+
 ## Noch zu erledigen (Global)
-- [ ] RBAC in allen AI-Flows implementieren
+- [ ] RBAC in allen restlichen AI-Flows implementieren
 - [ ] Firestore Security Rules aktualisieren
 - [ ] Authentication Flow testen
 - [ ] Deployment Konfiguration prüfen

@@ -65,6 +65,15 @@ export const getAllCamps = ai.defineFlow(
     outputSchema: z.array(CampSchema),
   },
   async (input) => {
+    const { getRbacContext, hasModuleAccess } = await import('@/lib/rbac');
+    const context = await getRbacContext();
+    
+    // RBAC: Check if user has access to Training Camp module
+    if (!hasModuleAccess(context.role, 'Training Camp')) {
+      console.warn(`[getAllCamps] User ${context.email} with role ${context.role} denied access to Training Camp module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Trainingslager anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllCamps] Firestore is not initialized. Check your server configuration.");

@@ -8,8 +8,13 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { LeadSchema, type Lead } from './leads.types';
 import type { admin } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all leads
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all leads with RBAC
 export const getAllLeads = ai.defineFlow(
   {
     name: 'getAllLeads',
@@ -17,6 +22,14 @@ export const getAllLeads = ai.defineFlow(
     outputSchema: z.array(LeadSchema),
   },
   async (input) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Leads module (Super-Admin only)
+    if (!hasModuleAccess(context.role, 'Leads')) {
+      console.warn(`[getAllLeads] User ${context.email} with role ${context.role} denied access to Leads module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Leads anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");

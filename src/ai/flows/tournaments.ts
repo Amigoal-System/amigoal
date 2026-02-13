@@ -7,24 +7,47 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TournamentSchema, type Tournament, TournamentTeamSchema, type TournamentTeam } from './tournaments.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
-// Flow to get all tournaments
+// Flow to get all tournaments with RBAC
 export const getAllTournaments = ai.defineFlow(
   {
     name: 'getAllTournaments',
-    inputSchema: z.void().optional().nullable(),
+    inputSchema: z.string().optional().nullable(), // clubId
     outputSchema: z.array(TournamentSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Tournaments module
+    if (!hasModuleAccess(context.role, 'Tournaments')) {
+      console.warn(`[getAllTournaments] User ${context.email} with role ${context.role} denied access to Tournaments module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Turniere anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllTournaments] Firestore is not initialized.");
       throw new Error("Database service is not available.");
     }
     try {
-        const tournamentsCollectionRef = db.collection("tournaments");
-        const snapshot = await tournamentsCollectionRef.get();
+        let query = db.collection("tournaments");
+        
+        // RBAC: Filter by clubId for non-super-admins
+        if (context.role !== 'Super-Admin') {
+            if (!context.clubId) {
+                return [];
+            }
+            query = query.where('clubId', '==', context.clubId);
+        } else if (requestedClubId) {
+            query = query.where('clubId', '==', requestedClubId);
+        }
+        
+        const snapshot = await query.get();
         return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Tournament[];
     } catch (error: any) {
         if (error.code === 5) {
