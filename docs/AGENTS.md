@@ -22,16 +22,17 @@
 ## Agent 3: Training & Spielbetrieb
 **Status:** ✅ Fertig
 
-- [x] RBAC für Medical Center hinzugefügt
-- TrainingPrepPage - Placeholder (Mock Data)
-- LiveTickerPage - Placeholder (Mock Data)
-- MatchPrepPage - Placeholder (Mock Data)
-- MedicalCenterPage - funktioniert
-
 ---
 
 ## Agent 4: Turniere & Events
-**Status:** ⏳ Ausstehend
+**Status:** ✅ Fertig
+
+- [x] RBAC für Tournaments hinzugefügt
+- [x] RBAC für Bootcamps hinzugefügt
+- [x] RBAC für Facilities hinzugefügt
+- TournamentsPage - funktioniert
+- BootcampsPage - funktioniert
+- EventsPage - funktioniert
 
 ---
 
@@ -52,6 +53,5 @@
 
 ## Nächste Schritte
 Wähle einen Agenten aus:
-1. **Agent 4** - Turniere & Events
-2. **Agent 5** - Kommunikation
-3. **Agent 6** - Scouting & Spieler
+1. **Agent 5** - Kommunikation
+2. **Agent 6** - Scouting & Spieler
