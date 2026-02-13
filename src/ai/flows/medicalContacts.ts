@@ -6,6 +6,11 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { MedicalContactSchema, type MedicalContact } from './medicalContacts.types';
 import { sendMail } from '@/services/email';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 export const getAllMedicalContacts = ai.defineFlow(
   {
@@ -13,8 +18,22 @@ export const getAllMedicalContacts = ai.defineFlow(
     outputSchema: z.array(MedicalContactSchema),
   },
   async () => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Medical Center module
+    if (!hasModuleAccess(context.role, 'Medical Center')) {
+      console.warn(`[getAllMedicalContacts] User ${context.email} with role ${context.role} denied access to Medical Center module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, das Medical Center anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("Database service is not available.");
+    
+    // Only Super-Admin and Club-Admins can see all medical contacts
+    if (context.role !== 'Super-Admin' && context.role !== 'Club-Admin') {
+        return [];
+    }
+    
     try {
       const snapshot = await db.collection("medicalContacts").orderBy('lastName').orderBy('firstName').get();
       if (snapshot.empty) return [];
