@@ -3,30 +3,27 @@
 import React from 'react';
 import { SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useTeam } from '@/hooks/use-team';
-import { allNavItems } from '@/lib/roles';
-
-const visibleSections = [
-    'Allgemein',
-    'Training & Spielbetrieb',
-    'Shop & Material',
-    'Travel & Events',
-    'Finanzen',
-    'Kommunikation',
-    'Zusätzliches'
-];
+import { allNavItems, sectionOrder } from '@/lib/roles';
+import { getFilteredNavItems } from '@/hooks/useRbac';
 
 const PlayerNav = ({ open }: { open: boolean }) => {
-    const { lang } = useTeam();
+    const { lang, currentUserRole } = useTeam();
+
+    const visibleSections = sectionOrder['Player'] || [
+        'Allgemein',
+        'Training & Spielbetrieb',
+        'Shop & Material',
+        'Travel & Events',
+        'Finanzen',
+        'Kommunikation',
+        'Zusätzliches'
+    ];
+
+    const filteredNavItems = getFilteredNavItems(currentUserRole, allNavItems);
 
     const sections = visibleSections.map(sectionName => ({
         name: sectionName,
-        items: allNavItems.filter(item => {
-             if (item.section !== sectionName) return false;
-            // Exclude items not relevant for players
-            const excludedModules = ['Training Prep', 'Live Ticker', 'Match Prep.', 'Rules', 'Scouting', 'Inventory', 'Ticketing'];
-            if (excludedModules.includes(item.module)) return false;
-            return true;
-        })
+        items: filteredNavItems.filter(item => item.section === sectionName)
     })).filter(section => section.items.length > 0);
 
     return (

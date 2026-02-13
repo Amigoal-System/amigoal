@@ -3,49 +3,30 @@
 import React from 'react';
 import { SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useTeam } from '@/hooks/use-team';
-import { allNavItems } from '@/lib/roles';
-
-const visibleSections = [
-    'Allgemein',
-    'Anbieter-Cockpit',
-    'Kommunikation',
-    'Zusätzliches'
-];
+import { allNavItems, sectionOrder } from '@/lib/roles';
+import { getFilteredNavItems } from '@/hooks/useRbac';
 
 const ProviderNav = ({ open }: { open: boolean }) => {
     const { lang, currentUserRole } = useTeam();
 
-    const allowedModules: Record<string, string[]> = {
-        'Trainingslager-Anbieter': ['Training Camp'],
-        'Bootcamp-Anbieter': ['Bootcamps'],
-        'Turnieranbieter': ['Tournaments'],
-    };
-
-    // Base permissions for all providers
-    const providerPermissions = ['Dashboard', 'Provider Requests', 'Provider Facilities', 'Provider Billing', 'Profile', 'Chat', 'Settings', 'Bewertungs-Attribute', 'Staff'];
+    let visibleSections: string[] = [];
     
-    const sections = visibleSections.map(sectionName => {
-        let items = allNavItems.filter(item => {
-            if (item.section !== sectionName) return false;
-            
-            // Allow general provider permissions
-            if (providerPermissions.includes(item.module)) return true;
-            
-            // Allow role-specific modules
-            if (currentUserRole && allowedModules[currentUserRole] && allowedModules[currentUserRole].includes(item.module)) {
-                return true;
-            }
-            
-            return false;
-        });
-        
-        return {
-            name: sectionName,
-            items: items
-        };
-    }).filter(section => section.items.length > 0);
-    
+    if (currentUserRole === 'Trainingslager-Anbieter') {
+        visibleSections = sectionOrder['Trainingslager-Anbieter'] || ['Allgemein', 'Anbieter-Cockpit', 'Zusätzliches'];
+    } else if (currentUserRole === 'Bootcamp-Anbieter') {
+        visibleSections = sectionOrder['Bootcamp-Anbieter'] || ['Allgemein', 'Anbieter-Cockpit', 'Zusätzliches'];
+    } else if (currentUserRole === 'Turnieranbieter') {
+        visibleSections = sectionOrder['Turnieranbieter'] || ['Allgemein', 'Anbieter-Cockpit', 'Zusätzliches'];
+    } else {
+        visibleSections = ['Allgemein', 'Anbieter-Cockpit', 'Kommunikation', 'Zusätzliches'];
+    }
 
+    const filteredNavItems = getFilteredNavItems(currentUserRole, allNavItems);
+
+    const sections = visibleSections.map(sectionName => ({
+        name: sectionName,
+        items: filteredNavItems.filter(item => item.section === sectionName)
+    })).filter(section => section.items.length > 0);
 
     return (
         <>
@@ -59,7 +40,7 @@ const ProviderNav = ({ open }: { open: boolean }) => {
                             if (link.module === 'Settings') {
                                 href = `/${lang}/dashboard/settings/evaluation-attributes`;
                             }
-                             if (link.module === 'Profile') {
+                            if (link.module === 'Profile') {
                                 href = `/${lang}/dashboard/profile`;
                             }
                             return (

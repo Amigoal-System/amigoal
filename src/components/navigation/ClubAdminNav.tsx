@@ -5,25 +5,28 @@ import { SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useTeam } from '@/hooks/use-team';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { allNavItems } from '@/lib/roles';
-
-const visibleSections = [
-    'Allgemein',
-    'Vereins-Cockpit',
-    'Training & Spielbetrieb',
-    'Travel & Events',
-    'Finanzen',
-    'Buchhaltung',
-    'Kommunikation',
-    'Zusätzliches'
-];
+import { allNavItems, sectionOrder } from '@/lib/roles';
+import { getFilteredNavItems } from '@/hooks/useRbac';
 
 const ClubAdminNav = ({ open }: { open: boolean }) => {
-    const { lang, hasTournamentModule, hasNewsletterModule } = useTeam();
+    const { lang, hasTournamentModule, hasNewsletterModule, currentUserRole } = useTeam();
+
+    const visibleSections = sectionOrder['Club-Admin'] || [
+        'Allgemein',
+        'Vereins-Cockpit',
+        'Training & Spielbetrieb',
+        'Travel & Events',
+        'Finanzen',
+        'Buchhaltung',
+        'Kommunikation',
+        'Zusätzliches'
+    ];
+
+    const filteredNavItems = getFilteredNavItems(currentUserRole, allNavItems);
 
     const sections = visibleSections.map(sectionName => ({
         name: sectionName,
-        items: allNavItems.filter(item => {
+        items: filteredNavItems.filter(item => {
             if (item.section !== sectionName) return false;
             // Special rule for Tournaments
             if (item.module === 'Tournaments' && !hasTournamentModule) return false;

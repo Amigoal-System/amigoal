@@ -3,16 +3,19 @@
 import React from 'react';
 import { SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useTeam } from '@/hooks/use-team';
-import { allNavItems } from '@/lib/roles';
-
-const visibleSections = ['Allgemein', 'Kommunikation', 'Zusätzliches'];
+import { allNavItems, sectionOrder } from '@/lib/roles';
+import { getFilteredNavItems } from '@/hooks/useRbac';
 
 const DefaultNav = ({ open }: { open: boolean }) => {
-    const { lang } = useTeam();
+    const { lang, currentUserRole } = useTeam();
+
+    const visibleSections = sectionOrder[currentUserRole || 'Fan'] || ['Allgemein', 'Kommunikation', 'Zusätzliches'];
+
+    const filteredNavItems = getFilteredNavItems(currentUserRole, allNavItems);
 
     const sections = visibleSections.map(sectionName => ({
         name: sectionName,
-        items: allNavItems.filter(item => item.section === sectionName)
+        items: filteredNavItems.filter(item => item.section === sectionName)
     })).filter(section => section.items.length > 0);
 
     return (

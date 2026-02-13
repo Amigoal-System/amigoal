@@ -3,30 +3,29 @@
 import React from 'react';
 import { SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { useTeam } from '@/hooks/use-team';
-import { allNavItems } from '@/lib/roles';
-
-const visibleSections = [
-    'Allgemein',
-    'Plattform-Management',
-    'Plattform-Inhalte',
-    'Travel & Events',
-    'Web3 Management',
-    'Globale Konfiguration',
-    'System & Entwicklung',
-];
+import { allNavItems, sectionOrder } from '@/lib/roles';
+import { getFilteredNavItems } from '@/hooks/useRbac';
 
 const SuperAdminNav = ({ open }: { open: boolean }) => {
-    const { lang } = useTeam();
+    const { lang, currentUserRole } = useTeam();
+
+    const visibleSections = sectionOrder['Super-Admin'] || [
+        'Allgemein',
+        'Plattform-Management',
+        'Plattform-Inhalte',
+        'Finanz- & Vertrags-Cockpit',
+        'Event-Management',
+        'Plattform-Aktivität',
+        'Globale Konfiguration',
+        'System & Entwicklung',
+    ];
+
+    const filteredNavItems = getFilteredNavItems(currentUserRole, allNavItems);
 
     const sections = visibleSections.map(sectionName => ({
         name: sectionName,
-        items: allNavItems.filter(item => {
-            if (item.section !== sectionName) return false;
-            // Super Admins see everything in their sections.
-            return true;
-        })
+        items: filteredNavItems.filter(item => item.section === sectionName)
     })).filter(section => section.items.length > 0);
-
 
     return (
         <>
