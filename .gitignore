@@ -45,7 +45,7 @@ workspace/
 heavy_files.txt
 
 # Lockfiles and artifacts
-package-lock.json
+# package-lock.json - kept for deployment
 yarn.lock
 pnpm-lock.yaml
 
