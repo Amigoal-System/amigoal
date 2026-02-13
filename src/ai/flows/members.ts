@@ -10,15 +10,29 @@ import { MemberSchema, type Member } from './members.types';
 import type { admin } from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all members, optionally filtered by clubId
+// Helper to get current user context
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all members with RBAC
 const getAllMembersFlow = ai.defineFlow(
   {
     name: 'getAllMembersFlow',
     inputSchema: z.string().optional().nullable(), // clubId or '*' for all
     outputSchema: z.array(MemberSchema),
   },
-  async (clubId) => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Members module
+    if (!hasModuleAccess(context.role, 'Members')) {
+      console.warn(`[getAllMembersFlow] User ${context.email} with role ${context.role} denied access to Members module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Mitglieder anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllMembersFlow] Firestore is not initialized.");
@@ -27,18 +41,40 @@ const getAllMembersFlow = ai.defineFlow(
     try {
         let membersCollectionRef: admin.firestore.Query = db.collection("members");
         
+        // RBAC: Non-Super-Admins can only see their own club's members
+        let effectiveClubId = requestedClubId;
+        
+        if (context.role !== 'Super-Admin') {
+            // Force clubId from context for non-super-admins
+            if (!context.clubId) {
+                console.warn(`[getAllMembersFlow] User ${context.email} has no clubId`);
+                return [];
+            }
+            effectiveClubId = context.clubId;
+        } else if (requestedClubId === '*') {
+            // Super-Admin can request all
+            effectiveClubId = '*';
+        } else {
+            effectiveClubId = requestedClubId || context.clubId;
+        }
+        
         // If a specific clubId is provided (and it's not the wildcard), filter by it.
-        if (clubId && clubId !== '*') {
-            membersCollectionRef = membersCollectionRef.where('clubId', '==', clubId);
+        if (effectiveClubId && effectiveClubId !== '*') {
+            membersCollectionRef = membersCollectionRef.where('clubId', '==', effectiveClubId);
         }
 
         const snapshot = await membersCollectionRef.get();
         const members = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Member[];
+        
+        // Additional filtering for Coach role - only show their team's members
+        if (context.role === 'Coach' && context.clubId) {
+            // Coaches can see all members in their club but this is filtered by the team assignment in UI
+        }
+        
         return members;
     } catch (error: any) {
         if (error.code === 5) {
             console.error("[getAllMembersFlow] Firestore collection 'members' not found.");
-            // If the collection doesn't exist, it's better to return an empty array than to throw
             return [];
         }
         console.error("[getAllMembersFlow] Error fetching members:", error);

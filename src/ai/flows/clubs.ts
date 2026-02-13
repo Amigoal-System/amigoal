@@ -12,8 +12,13 @@ import type { admin } from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
 import { addAmigoalContract } from './amigoalContracts';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all clubs
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all clubs with RBAC
 export const getAllClubs = ai.defineFlow(
   {
     name: 'getAllClubs',
@@ -21,6 +26,14 @@ export const getAllClubs = ai.defineFlow(
     outputSchema: z.array(ClubSchema),
   },
   async (input) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Clubs module (only Super-Admin and Club-Admin)
+    if (!hasModuleAccess(context.role, 'Vereine')) {
+      console.warn(`[getAllClubs] User ${context.email} with role ${context.role} denied access to Clubs module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Vereine anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
         console.error("[getAllClubs] Firestore is not initialized. Check your server configuration.");

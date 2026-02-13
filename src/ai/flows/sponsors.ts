@@ -7,21 +7,46 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { SponsorSchema, type Sponsor } from './sponsors.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all sponsors
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all sponsors with RBAC
 export const getAllSponsors = ai.defineFlow(
   {
     name: 'getAllSponsors',
+    inputSchema: z.string().optional().nullable(), // optional clubId
     outputSchema: z.array(SponsorSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Sponsoring module
+    if (!hasModuleAccess(context.role, 'Sponsoring')) {
+      console.warn(`[getAllSponsors] User ${context.email} with role ${context.role} denied access to Sponsoring module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Sponsoren anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
     }
     try {
-      const sponsorsCollectionRef = db.collection("sponsors");
-      const snapshot = await sponsorsCollectionRef.get();
+      let query = db.collection("sponsors");
+      
+      // RBAC: Filter by clubId for non-super-admins
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          query = query.where('clubId', '==', context.clubId);
+      } else if (requestedClubId) {
+          query = query.where('clubId', '==', requestedClubId);
+      }
+      
+      const snapshot = await query.get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Sponsor[];
     } catch (error: any) {

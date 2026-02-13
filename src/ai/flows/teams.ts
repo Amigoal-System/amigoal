@@ -7,6 +7,11 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TeamSchema, CreateTeamSchema, type Team, type CreateTeamInput } from './teams.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 export const getAllTeams = ai.defineFlow(
   {
@@ -14,13 +19,33 @@ export const getAllTeams = ai.defineFlow(
     inputSchema: z.string().optional().nullable(), // clubId, can be optional for super-admin
     outputSchema: z.array(TeamSchema),
   },
-  async (clubId) => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Teams module
+    if (!hasModuleAccess(context.role, 'Teams')) {
+      console.warn(`[getAllTeams] User ${context.email} with role ${context.role} denied access to Teams module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Mannschaften anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("Database service is not available.");
     
     let query: FirebaseFirestore.Query = db.collection("teams");
-    if (clubId) {
-      query = query.where('clubId', '==', clubId);
+    
+    // RBAC: Non-Super-Admins can only see their own club's teams
+    let effectiveClubId = requestedClubId;
+    
+    if (context.role !== 'Super-Admin') {
+        if (!context.clubId) {
+            console.warn(`[getAllTeams] User ${context.email} has no clubId`);
+            return [];
+        }
+        effectiveClubId = context.clubId;
+    }
+    
+    if (effectiveClubId) {
+      query = query.where('clubId', '==', effectiveClubId);
     }
     
     const snapshot = await query.get();

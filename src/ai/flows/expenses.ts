@@ -7,19 +7,45 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { ExpenseSchema, type Expense } from './expenses.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all expenses
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all expenses with RBAC
 export const getAllExpenses = ai.defineFlow(
   {
     name: 'getAllExpenses',
+    inputSchema: z.string().optional().nullable(), // optional clubId
     outputSchema: z.array(ExpenseSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Expenses module
+    if (!hasModuleAccess(context.role, 'Expenses')) {
+      console.warn(`[getAllExpenses] User ${context.email} with role ${context.role} denied access to Expenses module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Spesen anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("Database service is not available.");
+    
     try {
-      const expensesCollectionRef = db.collection("expenses");
-      const snapshot = await expensesCollectionRef.orderBy('date', 'desc').get();
+      let query = db.collection("expenses");
+      
+      // RBAC: Filter by clubId for non-super-admins
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          query = query.where('clubId', '==', context.clubId);
+      } else if (requestedClubId) {
+          query = query.where('clubId', '==', requestedClubId);
+      }
+      
+      const snapshot = await query.orderBy('date', 'desc').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Expense[];
     } catch (error) {
