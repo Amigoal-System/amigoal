@@ -1,5 +1,8 @@
 
-'use server';
+/**
+ * RBAC (Role-Based Access Control) utilities
+ * This file contains helper functions for checking user permissions based on roles
+ */
 
 import { getAuth } from '@/lib/firebase/server';
 import { cookies } from 'next/headers';
@@ -29,14 +32,11 @@ export async function getRbacContext(): Promise<RbacContext> {
                 const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
                 const email = decodedClaims.email || null;
                 
-                // Determine role from email or custom claims
                 let role: UserRole = 'Gast';
                 
                 if (email === 'super.admin@amigoal.ch') {
                     role = 'Super-Admin';
                 } else {
-                    // For other users, role would be determined from Firestore
-                    // This is a simplified version - in production, you'd query Firestore
                     role = (decodedClaims.role as UserRole) || 'Gast';
                 }
 
@@ -73,42 +73,6 @@ export function hasModuleAccess(role: UserRole, moduleName: string): boolean {
             'Kein', 'Kein', 'Voll',
             'Voll', 'Voll', 'Kein'
         ],
-        'Coach': [
-            'Voll', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Limit', 'Voll', 'Voll', 'Limit', 'Kein', 'Kein', 'Kein', 'Kein', 'Voll',
-            'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll',
-            'Kein', 'Kein', 'Kein',
-            'Voll', 'Kein', 'Kein', 'Voll', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Limit', 'Voll', 'Voll', 'Voll', 'Voll', 'Limit',
-            'Kein', 'Kein',
-            'Voll', 'Voll', 'Voll', 'Voll', 'Voll', 'Voll',
-            'Kein', 'Kein', 'Voll',
-            'Voll', 'Voll', 'Kein'
-        ],
-        'Player': [
-            'Voll', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Voll', 'Kein', 'Kein', 'Kein',
-            'Voll', 'Kein', 'Voll', 'Kein', 'Kein', 'Kein', 'Kein', 'Voll', 'Voll', 'Voll',
-            'Kein', 'Kein', 'Kein',
-            'Voll', 'Kein', 'Kein', 'Voll', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Limit', 'Kein', 'Kein', 'Voll', 'Voll', 'Kein',
-            'Kein', 'Kein',
-            'Voll', 'Voll', 'Voll', 'Voll', 'Kein', 'Voll',
-            'Kein', 'Kein', 'Voll',
-            'Voll', 'Kein', 'Kein'
-        ],
-        'Parent': [
-            'Voll', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Limit', 'Kein', 'Limit', 'Kein', 'Kein', 'Kein', 'Kein', 'Limit', 'Kein', 'Kein',
-            'Kein', 'Kein', 'Kein',
-            'Voll', 'Kein', 'Kein', 'Voll', 'Kein', 'Kein', 'Kein', 'Kein',
-            'Voll', 'Limit', 'Kein', 'Limit', 'Kein', 'Kein',
-            'Kein', 'Kein',
-            'Voll', 'Voll', 'Voll', 'Kein', 'Voll', 'Voll',
-            'Kein', 'Kein', 'Voll',
-            'Voll', 'Kein', 'Kein'
-        ],
     };
 
     const roleConfig = rolesConfig[role];
@@ -132,31 +96,7 @@ export function hasModuleAccess(role: UserRole, moduleName: string): boolean {
     ];
 
     const moduleIndex = moduleOrder.indexOf(moduleName);
-    if (moduleIndex === -1) return false;
+    if (moduleIndex === -1) return true;
     
     return roleConfig[moduleIndex] === 'Voll' || roleConfig[moduleIndex] === 'Limit';
-}
-
-export function filterDataByRole<T extends { clubId?: string; teamId?: string; memberId?: string; userId?: string }>(
-    data: T[],
-    context: RbacContext,
-    options?: {
-        allowAllForSuperAdmin?: boolean;
-        requiredRole?: UserRole;
-    }
-): T[] {
-    const { role, clubId, userId } = context;
-    
-    // Super-Admin sees everything
-    if (role === 'Super-Admin' && options?.allowForSuperAdmin !== false) {
-        return data;
-    }
-    
-    // If no clubId is associated with user, return empty
-    if (!clubId) {
-        return [];
-    }
-    
-    // Filter by clubId for non-super-admin users
-    return data.filter(item => item.clubId === clubId);
 }
