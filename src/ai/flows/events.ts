@@ -8,24 +8,47 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { EventSchema, EventRegistrationSchema, type Event } from './events.types';
 import { firestore } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all events for a specific context
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all events for a specific context with RBAC
 export const getAllEvents = ai.defineFlow(
   {
     name: 'getAllEvents',
     inputSchema: z.string().optional().nullable(), // clubId or null/undefined for super-admin public events
     outputSchema: z.array(EventSchema),
   },
-  async (clubId) => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Events module
+    if (!hasModuleAccess(context.role, 'Events')) {
+      console.warn(`[getAllEvents] User ${context.email} with role ${context.role} denied access to Events module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Events anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("Database service is not available.");
     
     try {
         let query: firestore.Query = db.collection("events");
 
-        if (clubId) {
+        // RBAC: Filter by clubId for non-super-admins
+        let effectiveClubId = requestedClubId;
+        
+        if (context.role !== 'Super-Admin') {
+            if (!context.clubId) {
+                return [];
+            }
+            effectiveClubId = context.clubId;
+        }
+
+        if (effectiveClubId) {
             // Club users see only their club's events
-            query = query.where('clubId', '==', clubId);
+            query = query.where('clubId', '==', effectiveClubId);
         } else {
             // Super-admin (when clubId is null/undefined) sees only public events
             query = query.where('clubId', '==', 'public');

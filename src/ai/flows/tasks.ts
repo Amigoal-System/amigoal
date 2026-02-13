@@ -8,15 +8,28 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TaskSchema, type Task } from './tasks.types';
 import type { admin } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all tasks, optionally filtered by clubId (which can also be a providerId)
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all tasks with RBAC
 export const getAllTasks = ai.defineFlow(
   {
     name: 'getAllTasks',
     inputSchema: z.string().optional().nullable(), // clubId or providerId
     outputSchema: z.array(TaskSchema),
   },
-  async (ownerId) => {
+  async (requestedOwnerId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Tasks module
+    if (!hasModuleAccess(context.role, 'Tasks')) {
+      console.warn(`[getAllTasks] User ${context.email} with role ${context.role} denied access to Tasks module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Aufgaben anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
@@ -24,8 +37,18 @@ export const getAllTasks = ai.defineFlow(
     try {
       let tasksCollectionRef: admin.firestore.Query = db.collection("tasks");
 
-      if (ownerId) {
-        tasksCollectionRef = tasksCollectionRef.where('clubId', '==', ownerId);
+      // RBAC: Filter by clubId for non-super-admins
+      let effectiveOwnerId = requestedOwnerId;
+      
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          effectiveOwnerId = context.clubId;
+      }
+      
+      if (effectiveOwnerId) {
+        tasksCollectionRef = tasksCollectionRef.where('clubId', '==', effectiveOwnerId);
       }
       
       // REMOVED: .orderBy('createdAt', 'desc') to prevent index error. Sorting will be done client-side.

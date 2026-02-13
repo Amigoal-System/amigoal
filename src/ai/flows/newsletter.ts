@@ -8,6 +8,11 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { NewsletterGroupSchema, NewsletterCampaignSchema, type NewsletterGroup, type NewsletterCampaign } from './newsletter.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 
 // --- Newsletter Groups ---
@@ -18,11 +23,30 @@ export const getAllNewsletterGroups = ai.defineFlow(
     inputSchema: z.string(), // clubId
     outputSchema: z.array(NewsletterGroupSchema),
   },
-  async (clubId) => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Newsletter module
+    if (!hasModuleAccess(context.role, 'Newsletter')) {
+      console.warn(`[getAllNewsletterGroups] User ${context.email} with role ${context.role} denied access to Newsletter module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Newsletter anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) throw new Error("Database service is not available.");
+    
+    // RBAC: Filter by clubId for non-super-admins
+    let effectiveClubId = requestedClubId;
+    
+    if (context.role !== 'Super-Admin') {
+        if (!context.clubId) {
+            return [];
+        }
+        effectiveClubId = context.clubId;
+    }
+    
     try {
-      const snapshot = await db.collection("newsletterGroups").where('clubId', '==', clubId).orderBy('name').get();
+      const snapshot = await db.collection("newsletterGroups").where('clubId', '==', effectiveClubId).orderBy('name').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as NewsletterGroup[];
     } catch (error) {

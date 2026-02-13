@@ -8,15 +8,28 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TrainingSchema, type Training } from './trainings.types';
 import type { admin } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all trainings for a specific club
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all trainings for a specific club with RBAC
 export const getAllTrainings = ai.defineFlow(
   {
     name: 'getAllTrainings',
     inputSchema: z.string().optional().nullable(), // clubId
     outputSchema: z.array(TrainingSchema),
   },
-  async (clubId) => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Training module
+    if (!hasModuleAccess(context.role, 'Training')) {
+      console.warn(`[getAllTrainings] User ${context.email} with role ${context.role} denied access to Training module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Trainings anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
@@ -24,17 +37,19 @@ export const getAllTrainings = ai.defineFlow(
     try {
       let trainingsCollectionRef: admin.firestore.Query = db.collection("trainings");
       
+      // RBAC: Filter by clubId for non-super-admins
+      let effectiveClubId = requestedClubId;
+      
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          effectiveClubId = context.clubId;
+      }
+      
       // If a clubId is provided, filter the trainings for that club
-      if (clubId) {
-        // This assumes trainings have a 'clubId' field.
-        // If not, the data model needs to be updated. For now, we'll assume it exists.
-        // As a fallback for existing data, we can also filter by team name if teams are unique to clubs.
-        // For this implementation, we will assume a 'clubId' field is the standard.
-        // The mock data doesn't have it, but real data should.
-        // To make it work with current structure, let's filter by team name indirectly.
-        // This is not ideal but works with current data. A migration to add clubId would be better.
-        // Let's assume a `clubId` field is present on trainings for proper data segregation.
-        trainingsCollectionRef = trainingsCollectionRef.where('clubId', '==', clubId);
+      if (effectiveClubId) {
+        trainingsCollectionRef = trainingsCollectionRef.where('clubId', '==', effectiveClubId);
       }
       
       const snapshot = await trainingsCollectionRef.orderBy('date', 'desc').get();
