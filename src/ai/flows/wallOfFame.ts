@@ -7,23 +7,47 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { HonoraryMemberSchema, type HonoraryMember } from './wallOfFame.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all honorary members
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all honorary members with RBAC
 const getAllHonoraryMembersFlow = ai.defineFlow(
   {
     name: 'getAllHonoraryMembersFlow',
-    inputSchema: z.void().optional().nullable(),
+    inputSchema: z.string().optional().nullable(), // clubId
     outputSchema: z.array(HonoraryMemberSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Wall of Fame module
+    if (!hasModuleAccess(context.role, 'Wall of Fame')) {
+      console.warn(`[getAllHonoraryMembersFlow] User ${context.email} with role ${context.role} denied access to Wall of Fame module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, die Wall of Fame anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllHonoraryMembersFlow] Firestore is not initialized.");
       throw new Error("Database service is not available.");
     }
     try {
-        const wallOfFameCollectionRef = db.collection("honoraryMembers");
-        const snapshot = await wallOfFameCollectionRef.get();
+        let query = db.collection("honoraryMembers");
+        
+        // RBAC: Filter by clubId for non-super-admins
+        if (context.role !== 'Super-Admin') {
+            if (!context.clubId) {
+                return [];
+            }
+            query = query.where('clubId', '==', context.clubId);
+        } else if (requestedClubId) {
+            query = query.where('clubId', '==', requestedClubId);
+        }
+        
+        const snapshot = await query.get();
         if (snapshot.empty) {
             return [];
         }
@@ -40,8 +64,8 @@ const getAllHonoraryMembersFlow = ai.defineFlow(
   }
 );
 
-export async function getAllHonoraryMembers(): Promise<HonoraryMember[]> {
-    return getAllHonoraryMembersFlow();
+export async function getAllHonoraryMembers(clubId?: string | null): Promise<HonoraryMember[]> {
+    return getAllHonoraryMembersFlow(clubId || undefined);
 }
 
 // Flow to update an honorary member

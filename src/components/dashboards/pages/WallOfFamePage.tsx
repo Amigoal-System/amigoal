@@ -9,8 +9,10 @@ import { WallOfFameModal } from '@/components/WallOfFameModal';
 import { getAllHonoraryMembers, addHonoraryMember, updateHonoraryMember, deleteHonoraryMember } from '@/ai/flows/wallOfFame';
 import type { HonoraryMember } from '@/ai/flows/wallOfFame.types';
 import { useToast } from '@/hooks/use-toast';
+import { useTeam } from '@/hooks/use-team';
 
 export default function WallOfFamePage() {
+    const { club } = useTeam();
     const [members, setMembers] = useState<HonoraryMember[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,7 +22,7 @@ export default function WallOfFamePage() {
     const fetchMembers = async () => {
         setIsLoading(true);
         try {
-            const data = await getAllHonoraryMembers();
+            const data = await getAllHonoraryMembers(club?.id);
             setMembers(data);
         } catch (error) {
             console.error("Failed to fetch honorary members:", error);
@@ -32,7 +34,7 @@ export default function WallOfFamePage() {
 
     useEffect(() => {
         fetchMembers();
-    }, []);
+    }, [club?.id]);
 
     const handleSave = async (memberData: HonoraryMember) => {
         try {

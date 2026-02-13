@@ -9,16 +9,29 @@ import type { admin } from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
 import { firestore } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
-// Flow to get all staff members
+// Flow to get all staff members with RBAC
 export const getAllStaff = ai.defineFlow(
   {
     name: 'getAllAmigoalStaff',
     inputSchema: z.string().optional().nullable(), // ownerId
     outputSchema: z.array(AmigoalStaffSchema),
   },
-  async (ownerId) => {
+  async (requestedOwnerId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Staff module
+    // Only Super-Admin and internal staff can view this
+    if (!hasModuleAccess(context.role, 'Staff') && context.role !== 'Super-Admin') {
+      console.warn(`[getAllStaff] User ${context.email} with role ${context.role} denied access to Staff module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Staff anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
@@ -26,14 +39,17 @@ export const getAllStaff = ai.defineFlow(
     try {
       let collectionRef: admin.firestore.Query = db.collection("amigoalStaff");
       
-      if (ownerId) {
-        // If an ownerId is provided, filter by it.
-        // For Super-Admins who see everyone, the ownerId would be null or a special value.
-        // We will fetch Amigoal's own staff by checking for non-existent or null ownerId.
-        if (ownerId === 'amigoal_internal') {
+      // RBAC: Only Super-Admin can see all staff
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          collectionRef = collectionRef.where('ownerId', '==', context.clubId);
+      } else if (requestedOwnerId) {
+        if (requestedOwnerId === 'amigoal_internal') {
             collectionRef = collectionRef.where('ownerId', '==', null);
         } else {
-            collectionRef = collectionRef.where('ownerId', '==', ownerId);
+            collectionRef = collectionRef.where('ownerId', '==', requestedOwnerId);
         }
       }
 

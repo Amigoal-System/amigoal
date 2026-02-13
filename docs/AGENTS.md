@@ -1,129 +1,93 @@
-# Amigoal Entwicklung - Agenten Konfiguration
+# Amigoal - Agenten Entwicklung
 
-## Übersicht
-Diese Datei definiert die Agenten, die für die Fertigstellung des Amigoal-Projekts zuständig sind.
+## Aktueller Stand
 
-## ✅ RBAC Status
-
-### Implementiert (20+ AI-Flows):
-- ✅ members.ts
-- ✅ teams.ts
-- ✅ clubs.ts
-- ✅ expenses.ts
-- ✅ sponsors.ts
-- ✅ trainings.ts
-- ✅ matches.ts
-- ✅ events.ts
-- ✅ tasks.ts
-- ✅ newsletter.ts
-- ✅ tournaments.ts
-- ✅ camps.ts
-- ✅ leads.ts
-- ✅ watchlist.ts
-- ✅ highlights.ts
-- ✅ clubPlayerSearches.ts
-- ✅ users.ts
-- ✅ referrals.ts
-- ✅ contracts.ts
-- ✅ teamCash.ts
-
-### Security Rules:
-- ✅ Firestore Security Rules aktualisiert
-- ✅ Storage Security Rules aktualisiert
-
-### Authentication:
-- ✅ Login Flow überprüft
-- ✅ RBAC Context System implementiert
+### ✅ Abgeschlossen:
+1. **RBAC System** - Rollenbasierte Zugriffskontrolle in 20+ AI-Flows
+2. **Firestore Security Rules** - Sicherheitsregeln für alle Collections
+3. **Storage Security Rules** - Dateizugriffskontrolle
+4. **Navigation RBAC** - Seiten basierend auf Rollen gefiltert
 
 ---
 
 ## Agent 1: Mitglieder & Vereinsverwaltung
-**Zuständig für:**
-- Members Management (CRUD, Rollen)
-- Teams Management  
-- Clubs Administration
-- Wall of Fame
-- Staff Verwaltung
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] UI-Komponenten verifizieren
+- [ ] CRUD-Operationen testen
+- [ ] Wall of Fame implementieren
+- [ ] Staff-Verwaltung verifizieren
 
 ---
 
 ## Agent 2: Finanzen
-**Zuständig für:**
-- Mitgliederbeiträge (Invoices)
-- Spesen (Expenses)
-- Sponsoring
-- Team Cash
-- Verträge (Contracts)
-- Rechnungsstellung
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] Invoices (Rechnungsstellung)
+- [ ] Team Cash
+- [ ] Verträge (Contracts)
+- [ ] Coupons
 
 ---
 
 ## Agent 3: Training & Spielbetrieb
-**Zuständig für:**
-- Trainingsplanung
-- Spielvorbereitung (Match Prep)
-- Live Ticker
-- Taktiktafel
-- Leistungsdaten/Statistiken
-- Medical Center
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] Training Prep Page
+- [ ] Live Ticker
+- [ ] Match Prep (Taktiktafel)
+- [ ] Medical Center
 
 ---
 
 ## Agent 4: Turniere & Events
-**Zuständig für:**
-- Turnier-Management
-- Trainingslager
-- Bootcamps
-- Events/Kalender
-- Aufgaben (Tasks)
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] Tournament POS System
+- [ ] Tournament Live/Ticker
+- [ ] Bootcamps
+- [ ] Facilities
 
 ---
 
 ## Agent 5: Kommunikation
-**Zuständig für:**
-- Chat System
-- Newsletter
-- Umfragen (Polls)
-- Benachrichtigungen
+**Status:** Teilweise ⏳ | **Fine-Tuning:** 
 
-**Status:** ✅ RBAC implementiert (Newsletter)
+**Probleme identifiziert:**
+- ⚠️ Polls - Client-side, nicht als Server-Flow
+- ⚠️ Chat - Nutzt Firebase Client SDK direkt
+- ✅ Newsletter - RBAC implementiert
+
+**Empfohlene Aktionen:**
+- [ ] Polls in Server-Flows umwandeln
+- [ ] Chat mit RBAC-Server-Flows versehen
 
 ---
 
 ## Agent 6: Scouting & Spieler
-**Zuständig für:**
-- Scouting Berichte
-- Watchlist
-- Spieler-Vermittlung
-- Highlights
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] Scouting Reports UI
+- [ ] Player Placement
+- [ ] Highlights Approval Workflow
 
 ---
 
 ## Agent 7: Super-Admin / Plattform
-**Zuständig für:**
-- Lead Management
-- User Verwaltung
-- Vereins-Onboarding
-- Globale Konfiguration
-- FAQ & Blog
-- Rollen & Rechte Matrix
+**Status:** RBAC ✅ | **Fine-Tuning:** ⏳
 
-**Status:** ✅ RBAC implementiert
+- [ ] Lead Management Dashboard
+- [ ] SaaS Website Builder
+- [ ] Blog Management
 
 ---
 
 ## Nächste Schritte
-1. ✅ RBAC in allen AI-Flows
-2. ✅ Firestore Security Rules
-3. ⏳ Authentication Flow testen
-4. ⏳ Deployment verifizieren
+Bitte wähle einen Agenten aus, um weiterzuarbeiten:
+1. **Agent 1** - Mitglieder & Vereinsverwaltung
+2. **Agent 2** - Finanzen  
+3. **Agent 3** - Training & Spielbetrieb
+4. **Agent 4** - Turniere & Events
+5. **Agent 5** - Kommunikation (Chat/Polls fixen)
+6. **Agent 6** - Scouting & Spieler
+7. **Agent 7** - Super-Admin / Plattform
