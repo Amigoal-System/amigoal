@@ -412,6 +412,15 @@ export const getAllFacilities = ai.defineFlow(
     outputSchema: z.array(SportsFacilitySchema),
   },
   async () => {
+    const { getRbacContext, hasModuleAccess } = await import('@/lib/rbac');
+    const context = await getRbacContext();
+    
+    // RBAC: Check if user has access to Facilities module
+    if (!hasModuleAccess(context.role, 'Facility')) {
+      console.warn(`[getAllFacilities] User ${context.email} with role ${context.role} denied access to Facilities module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Einrichtungen anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllFacilities] Firestore is not initialized.");

@@ -71,6 +71,15 @@ export const getAllBootcamps = ai.defineFlow(
     outputSchema: z.array(BootcampSchema),
   },
   async (input) => {
+    const { getRbacContext, hasModuleAccess } = await import('@/lib/rbac');
+    const context = await getRbacContext();
+    
+    // RBAC: Check if user has access to Bootcamps module
+    if (!hasModuleAccess(context.role, 'Bootcamps')) {
+      console.warn(`[getAllBootcamps] User ${context.email} with role ${context.role} denied access to Bootcamps module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Bootcamps anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllBootcamps] Firestore is not initialized.");
