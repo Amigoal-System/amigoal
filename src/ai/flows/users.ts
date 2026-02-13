@@ -4,6 +4,11 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 export const deleteAllUsers = ai.defineFlow(
   {
@@ -12,6 +17,14 @@ export const deleteAllUsers = ai.defineFlow(
     outputSchema: z.object({ deletedCount: z.number() }),
   },
   async () => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Only Super-Admin can delete all users
+    if (context.role !== 'Super-Admin') {
+      console.warn(`[deleteAllUsers] User ${context.email} with role ${context.role} denied access to delete all users`);
+      throw new Error("Zugriff verweigert: Nur Super-Admin kann diese Aktion ausführen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");

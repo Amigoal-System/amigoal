@@ -8,21 +8,46 @@ import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { ReferralSchema, type Referral } from './referrals.types';
 import { sendMail } from '@/services/email';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all referrals
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all referrals with RBAC
 export const getReferrals = ai.defineFlow(
   {
     name: 'getReferrals',
+    inputSchema: z.string().optional().nullable(), // clubId
     outputSchema: z.array(ReferralSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Referrals module
+    if (!hasModuleAccess(context.role, 'Referrals')) {
+      console.warn(`[getReferrals] User ${context.email} with role ${context.role} denied access to Referrals module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Referrals anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       throw new Error("Database service is not available.");
     }
     try {
-      const referralsCollectionRef = db.collection("referrals");
-      const snapshot = await referralsCollectionRef.orderBy('createdAt', 'desc').get();
+      let query = db.collection("referrals");
+      
+      // RBAC: Filter by clubId for non-super-admins
+      if (context.role !== 'Super-Admin') {
+          if (!context.clubId) {
+              return [];
+          }
+          query = query.where('clubId', '==', context.clubId);
+      } else if (requestedClubId) {
+          query = query.where('clubId', '==', requestedClubId);
+      }
+      
+      const snapshot = await query.orderBy('createdAt', 'desc').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Referral[];
     } catch (error: any) {

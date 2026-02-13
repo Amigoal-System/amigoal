@@ -4,7 +4,7 @@
  * @fileOverview A flow for managing the team cash box using Firebase Firestore.
  *
  * - getTeamCashData - Fetches the current state of a team's cash box.
- * - addTransaction - Adds a new transaction to a team's cash box.
+ * - addTransaction - Adds a new transaction to team's cash box.
  * - settleDebt - Settles a member's debt.
  * - updateKeeper - Updates the keeper of the cash box.
  */
@@ -15,6 +15,11 @@ import { getDb } from '@/lib/firebase/server';
 import { TeamCashDataSchema, TeamIdSchema, TransactionSchema, MemberDebtSchema, KeeperSchema } from './teamCash.types';
 import type { TeamCashData, TeamId, Transaction, MemberDebt, Keeper } from './teamCash.types';
 import { firestore } from 'firebase-admin';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
+
+async function getCurrentContext() {
+    return await getRbacContext();
+}
 
 
 async function getTeamDocRef(teamId: string) {
@@ -29,8 +34,16 @@ export const getTeamCashData = ai.defineFlow(
         inputSchema: TeamIdSchema,
         outputSchema: TeamCashDataSchema,
     },
-    async (teamId) => {
-        if (!teamId) {
+    async (requestedTeamId) => {
+        const context = await getCurrentContext();
+        
+        // RBAC: Check if user has access to Team Cash module
+        if (!hasModuleAccess(context.role, 'Team Cash')) {
+          console.warn(`[getTeamCashData] User ${context.email} with role ${context.role} denied access to Team Cash module`);
+          throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, die Mannschaftskasse anzuzeigen.");
+        }
+
+        if (!requestedTeamId) {
             throw new Error("Team ID is required.");
         }
         const db = await getDb();
@@ -38,7 +51,7 @@ export const getTeamCashData = ai.defineFlow(
             console.error(`[getTeamCashData] Firestore not initialized.`);
             throw new Error("Database service is not available.");
         }
-        const teamDocRef = db.collection("team-cash").doc(teamId);
+        const teamDocRef = db.collection("team-cash").doc(requestedTeamId);
         
         try {
             const docSnap = await teamDocRef.get();

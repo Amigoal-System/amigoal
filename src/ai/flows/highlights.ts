@@ -9,23 +9,47 @@ import { getDb, getStorage } from '@/lib/firebase/server';
 import { HighlightSchema, type Highlight } from './highlights.types';
 import { v4 as uuidv4 } from 'uuid';
 import { googleAI } from '@genkit-ai/google-genai';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all highlights
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all highlights with RBAC
 export const getAllHighlights = ai.defineFlow(
   {
     name: 'getAllHighlights',
-    inputSchema: z.void().optional().nullable(),
+    inputSchema: z.string().optional().nullable(), // clubId
     outputSchema: z.array(HighlightSchema),
   },
-  async () => {
+  async (requestedClubId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Highlights module
+    if (!hasModuleAccess(context.role, 'Highlights')) {
+      console.warn(`[getAllHighlights] User ${context.email} with role ${context.role} denied access to Highlights module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, Highlights anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getAllHighlights] Firestore is not initialized.");
       throw new Error("Database service is not available.");
     }
     try {
-        const highlightsCollectionRef = db.collection("highlights");
-        const snapshot = await highlightsCollectionRef.orderBy('submittedAt', 'desc').get();
+        let query = db.collection("highlights");
+        
+        // RBAC: Filter by clubId for non-super-admins
+        if (context.role !== 'Super-Admin') {
+            if (!context.clubId) {
+                return [];
+            }
+            query = query.where('clubId', '==', context.clubId);
+        } else if (requestedClubId) {
+            query = query.where('clubId', '==', requestedClubId);
+        }
+        
+        const snapshot = await query.orderBy('submittedAt', 'desc').get();
         if (snapshot.empty) return [];
         return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Highlight[];
     } catch (error: any) {

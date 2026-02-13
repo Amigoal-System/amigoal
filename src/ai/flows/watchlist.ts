@@ -7,22 +7,45 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { WatchlistPlayerSchema, type WatchlistPlayer } from './watchlist.types';
+import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
-// Flow to get all players from the watchlist for a specific scout
+async function getCurrentContext() {
+    return await getRbacContext();
+}
+
+// Flow to get all players from the watchlist for a specific scout with RBAC
 export const getWatchlist = ai.defineFlow(
   {
     name: 'getWatchlist',
     inputSchema: z.string(), // Scout's user ID
     outputSchema: z.array(WatchlistPlayerSchema),
   },
-  async (scoutId) => {
+  async (requestedScoutId) => {
+    const context = await getCurrentContext();
+    
+    // RBAC: Check if user has access to Watchlist module
+    if (!hasModuleAccess(context.role, 'Watchlist')) {
+      console.warn(`[getWatchlist] User ${context.email} with role ${context.role} denied access to Watchlist module`);
+      throw new Error("Zugriff verweigert: Sie haben keine Berechtigung, die Watchlist anzuzeigen.");
+    }
+
     const db = await getDb();
     if (!db) {
       console.error("[getWatchlist] Firestore is not initialized.");
       throw new Error("Database service is not available.");
     }
     try {
-        const watchlistRef = db.collection("watchlist").where('addedBy', '==', scoutId);
+        // RBAC: Users can only see their own watchlist
+        let effectiveScoutId = requestedScoutId;
+        
+        if (context.role !== 'Super-Admin') {
+            if (!context.userId) {
+                return [];
+            }
+            effectiveScoutId = context.userId;
+        }
+        
+        const watchlistRef = db.collection("watchlist").where('addedBy', '==', effectiveScoutId);
         const snapshot = await watchlistRef.get();
         return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as WatchlistPlayer[];
     } catch (error: any) {
