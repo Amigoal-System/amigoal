@@ -3,40 +3,243 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // ==================== HELPER FUNCTIONS ====================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+    
+    // Get user's role from members collection
+    function getUserRole() {
+      return get(/databases/$(database)/documents/members/$(request.auth.uid)).data.roles[0];
+    }
+    
+    // Get user's clubId from members collection
+    function getUserClubId() {
+      return get(/databases/$(database)/documents/members/$(request.auth.uid)).data.clubId;
+    }
+    
+    // Check if user has specific role
+    function hasRole(role) {
+      return isAuthenticated() && role in get(/databases/$(database)/documents/members/$(request.auth.uid)).data.roles;
+    }
+    
+    // Check if user is Super Admin
+    function isSuperAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'super.admin@amigoal.ch';
+    }
+    
+    // Check if user is Club Admin for a specific club
+    function isClubAdmin(clubId) {
+      return isAuthenticated() && hasRole('Club-Admin') && getUserClubId() == clubId;
+    }
+    
+    // Check if document belongs to user's club
+    function belongsToUserClub() {
+      return resource.data.clubId == getUserClubId();
+    }
+    
+    // ==================== COLLECTIONS ====================
+    
     // Default deny all reads and writes
     match /{document=**} {
       allow read, write: if false;
     }
-
-    // Allow public read for specific collections if needed (e.g., public blog posts)
-    match /articles/{articleId} {
-      allow read: if true;
-      allow write: if request.auth.uid != null; // Example: Only authenticated users can write
-    }
-
-    // Members can only be read/written by authenticated users.
-    // More specific rules would be needed here (e.g., only admins can write).
+    
+    // ---- MEMBERS ----
+    // All authenticated users can read members of their own club
+    // Only Club-Admins can write members
     match /members/{memberId} {
-      allow read, write: if request.auth.uid != null;
-    }
-
-    // Users can only manage their own data
-    match /users/{userId} {
-      allow read, update, delete: if request.auth.uid == userId;
-      allow create: if request.auth.uid != null;
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId() ||
+         request.auth.uid == memberId);
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+      allow delete: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
     }
     
-    // Teams can be read by any authenticated user, but only written by admins (example)
-    match /teams/{teamId} {
-      allow read: if request.auth.uid != null;
-      // In a real app, you would check for an admin role:
-      // allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin';
-      allow write: if request.auth.uid != null; // Simplified for now
+    // ---- CLUBS ----
+    // Only Super-Admins can manage clubs
+    match /clubs/{clubId} {
+      allow read: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+      allow write: if isSuperAdmin();
+      allow create: if isSuperAdmin();
+      allow delete: if isSuperAdmin();
     }
-
-    // Allow users to read/write their own notifications
+    
+    // ---- TEAMS ----
+    // Club members can read, Club-Admins can write
+    match /teams/{teamId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+      allow delete: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+    }
+    
+    // ---- EXPENSES ----
+    match /expenses/{expenseId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager') || hasRole('Coach'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+    }
+    
+    // ---- SPONSORS ----
+    match /sponsors/{sponsorId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+    }
+    
+    // ---- TRAININGS ----
+    match /trainings/{trainingId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager') || hasRole('Coach'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Coach'));
+    }
+    
+    // ---- MATCHES ----
+    match /matches/{matchId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager') || hasRole('Coach'));
+      allow create: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Coach'));
+    }
+    
+    // ---- EVENTS ----
+    match /events/{eventId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId() ||
+         resource.data.clubId == 'public');
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager') || hasRole('Coach'));
+    }
+    
+    // ---- TASKS ----
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager') || hasRole('Board'));
+    }
+    
+    // ---- TOURNAMENTS ----
+    match /tournaments/{tournamentId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+    }
+    
+    // ---- CAMPS ----
+    match /camps/{campId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+    }
+    
+    // ---- NEWSLETTER GROUPS ----
+    match /newsletterGroups/{groupId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+    }
+    
+    // ---- HIGHLIGHTS ----
+    match /highlights/{highlightId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Board') || hasRole('Coach'));
+      allow create: if isAuthenticated();
+    }
+    
+    // ---- WATCHLIST ----
+    match /watchlist/{watchlistId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.addedBy == request.auth.uid);
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Scouting'));
+      allow create: if isAuthenticated() && hasRole('Scouting');
+    }
+    
+    // ---- LEADS ----
+    match /leads/{leadId} {
+      allow read, write: if isSuperAdmin();
+    }
+    
+    // ---- REFERRALS ----
+    match /referrals/{referralId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isSuperAdmin() || hasRole('Club-Admin');
+      allow create: if isAuthenticated();
+    }
+    
+    // ---- TEAM CASH ----
+    match /team-cash/{teamId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.clubId == getUserClubId());
+      allow write: if isAuthenticated() && 
+        (isSuperAdmin() || hasRole('Club-Admin') || hasRole('Manager'));
+    }
+    
+    // ---- CONTRACTS (Subcollection) ----
+    match /members/{memberId}/contracts/{contractId} {
+      allow read: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         hasRole('Club-Admin') || 
+         hasRole('Manager') ||
+         hasRole('Board') ||
+         request.auth.uid == memberId);
+      allow write: if isAuthenticated() && (isSuperAdmin() || hasRole('Club-Admin'));
+    }
+    
+    // ---- NOTIFICATIONS ----
     match /notifications/{notificationId} {
-      allow read, write, delete: if request.auth.uid == resource.data.userId;
+      allow read, write: if isAuthenticated() && 
+        (isSuperAdmin() || 
+         resource.data.userId == request.auth.uid);
+    }
+    
+    // ---- PUBLIC COLLECTIONS (Read-only for all) ----
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+    
+    // ---- CONFIGURATIONS ----
+    match /configurations/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+    
+    // ---- AMIGOAL STAFF ----
+    match /amigoalStaff/{staffId} {
+      allow read, write: if isSuperAdmin();
     }
   }
 }

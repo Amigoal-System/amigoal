@@ -3,14 +3,62 @@ rules_version = '2';
 // Amigoal Storage Rules
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public read access for all files.
-    // This is useful for public assets like profile pictures, club logos, etc.
+    
+    // ==================== HELPER FUNCTIONS ====================
+    
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'super.admin@amigoal.ch';
+    }
+    
+    // ==================== STORAGE PATHS ====================
+    
+    // ---- PUBLIC ASSETS ----
+    // Club logos, avatars, public images
+    match /public/{clubId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ---- MEMBER AVATARS ----
+    match /avatars/{memberId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && (request.auth.uid == memberId || isSuperAdmin());
+    }
+    
+    // ---- CLUB DOCUMENTS ----
+    match /clubs/{clubId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated(); // Could add role check here
+    }
+    
+    // ---- HIGHLIGHTS VIDEOS ----
+    match /highlights/{highlightId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ---- TOURNAMENT FILES ----
+    match /tournaments/{tournamentId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ---- CAMP IMAGES ----
+    match /camps/{campId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // ---- DEFAULT ----
     match /{allPaths=**} {
-      allow read;
-
-      // Only allow authenticated users to write (create, update, delete) files.
-      // This prevents unauthorized uploads and ensures data integrity.
-      allow write: if request.auth != null;
+      // Default: only authenticated users can read, only owners can write
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+        (request.resource.size < 10 * 1024 * 1024); // Max 10MB file size
     }
   }
 }
