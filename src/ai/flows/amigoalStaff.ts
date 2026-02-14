@@ -5,7 +5,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getAuth, getDb } from '@/lib/firebase/server';
 import { AmigoalStaffSchema, type AmigoalStaff, type HistoryItem } from './amigoalStaff.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
 import { firestore } from 'firebase-admin';
@@ -37,7 +37,7 @@ export const getAllStaff = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let collectionRef: admin.firestore.Query = db.collection("amigoalStaff");
+      let collectionRef: firebaseAdmin.firestore.Query = db.collection("amigoalStaff");
       
       // RBAC: Only Super-Admin can see all staff
       if (context.role !== 'Super-Admin') {
