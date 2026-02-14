@@ -65,5 +65,6 @@ export const SportsFacilitySchema = z.object({
   name: z.string(),
   location: z.string(),
   features: z.array(z.string()),
+  images: z.array(z.string()).optional(),
 });
 export type SportsFacility = z.infer<typeof SportsFacilitySchema>;

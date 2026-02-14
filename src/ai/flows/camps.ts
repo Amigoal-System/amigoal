@@ -454,8 +454,9 @@ export const addFacility = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-        const uploadedImageUrls = await uploadImages(facilityData.images || []);
-        const finalData = { ...facilityData, images: uploadedImageUrls };
+        const facilityDataWithImages = facilityData as { name: string; location: string; features: string[]; images?: string[] };
+        const uploadedImageUrls = await uploadImages(facilityDataWithImages.images || []);
+        const finalData = { ...facilityDataWithImages, images: uploadedImageUrls };
 
         const facilitiesCollectionRef = db.collection("facilities");
         const docRef = await facilitiesCollectionRef.add(finalData);
