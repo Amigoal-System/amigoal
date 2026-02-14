@@ -7,7 +7,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { LeadSchema, type Lead } from './leads.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {
@@ -35,7 +35,7 @@ export const getAllLeads = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let leadsCollectionRef: admin.firestore.Query = db.collection("leads");
+      let leadsCollectionRef: firebaseAdmin.firestore.Query = db.collection("leads");
 
       const snapshot = await leadsCollectionRef.orderBy('lastContact', 'desc').get();
       if (snapshot.empty) return [];

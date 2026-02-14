@@ -8,7 +8,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { CouponSchema, type Coupon } from './coupons.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {
@@ -104,7 +104,7 @@ export const validateCoupon = ai.defineFlow(
     const db = await getDb();
     if (!db) throw new Error("DB not available");
     
-    let query: admin.firestore.Query = db.collection('coupons').where('code', '==', code);
+    let query: firebaseAdmin.firestore.Query = db.collection('coupons').where('code', '==', code);
 
     if (scope) {
         query = query.where('scope', '==', scope);

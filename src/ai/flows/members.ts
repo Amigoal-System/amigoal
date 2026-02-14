@@ -7,7 +7,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getAuth, getDb } from '@/lib/firebase/server';
 import { MemberSchema, type Member } from './members.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
@@ -39,7 +39,7 @@ const getAllMembersFlow = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-        let membersCollectionRef: admin.firestore.Query = db.collection("members");
+        let membersCollectionRef: firebaseAdmin.firestore.Query = db.collection("members");
         
         // RBAC: Non-Super-Admins can only see their own club's members
         let effectiveClubId = requestedClubId;

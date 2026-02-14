@@ -9,7 +9,7 @@ import { getDb } from '@/lib/firebase/server';
 import { InvestorLeadSchema, type InvestorLead, type HistoryItem } from './investorLeads.types';
 import { sendMail } from '@/services/email';
 import { firestore } from 'firebase-admin';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 
 // Flow to get all investor leads
 export const getAllInvestorLeads = ai.defineFlow(
@@ -24,7 +24,7 @@ export const getAllInvestorLeads = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let collectionRef: admin.firestore.Query = db.collection("investorLeads");
+      let collectionRef: firebaseAdmin.firestore.Query = db.collection("investorLeads");
 
       if (!input?.includeArchived) {
           collectionRef = collectionRef.where('status', '!=', 'Archiviert');

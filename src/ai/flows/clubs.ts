@@ -8,7 +8,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getAuth, getDb } from '@/lib/firebase/server';
 import { ClubSchema, type Club } from './clubs.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { sendMail } from '@/services/email';
 import { customAlphabet } from 'nanoid';
 import { addAmigoalContract } from './amigoalContracts';
@@ -40,7 +40,7 @@ export const getAllClubs = ai.defineFlow(
         throw new Error("Database service is not available.");
     }
     try {
-        let clubsCollectionRef: admin.firestore.Query<admin.firestore.DocumentData> = db.collection("clubs");
+        let clubsCollectionRef: firebaseAdmin.firestore.Query<firebaseAdmin.firestore.DocumentData> = db.collection("clubs");
 
         const snapshot = await clubsCollectionRef.get();
         if (snapshot.empty) {

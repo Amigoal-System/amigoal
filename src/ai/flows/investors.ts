@@ -5,7 +5,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { InvestorSchema, type Investor } from './investors.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {

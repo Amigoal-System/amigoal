@@ -5,7 +5,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { AssociationMessageSchema, type AssociationMessage } from './associationMessages.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 
 export const getAssociationMessages = ai.defineFlow(
   {
@@ -19,7 +19,7 @@ export const getAssociationMessages = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     
-    let query: admin.firestore.Query = db.collection("associationMessages");
+    let query: firebaseAdmin.firestore.Query = db.collection("associationMessages");
     
     if (clubId) {
       query = query.where('clubId', '==', clubId);

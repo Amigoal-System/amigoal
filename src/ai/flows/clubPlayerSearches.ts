@@ -5,7 +5,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { ClubPlayerSearchSchema, type ClubPlayerSearch } from './clubPlayerSearches.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {
@@ -32,7 +32,7 @@ export const getAllClubPlayerSearches = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     
-    let query: admin.firestore.Query = db.collection("clubPlayerSearches");
+    let query: firebaseAdmin.firestore.Query = db.collection("clubPlayerSearches");
     
     // RBAC: Filter by clubId for non-super-admins
     if (context.role !== 'Super-Admin') {

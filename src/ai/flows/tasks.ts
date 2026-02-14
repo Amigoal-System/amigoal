@@ -7,7 +7,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TaskSchema, type Task } from './tasks.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {
@@ -35,7 +35,7 @@ export const getAllTasks = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let tasksCollectionRef: admin.firestore.Query = db.collection("tasks");
+      let tasksCollectionRef: firebaseAdmin.firestore.Query = db.collection("tasks");
 
       // RBAC: Filter by clubId for non-super-admins
       let effectiveOwnerId = requestedOwnerId;

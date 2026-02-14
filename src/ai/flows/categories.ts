@@ -6,7 +6,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { TeamCategorySchema, type TeamCategory } from './categories.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 
 // Flow to get all team categories, optionally filtered by country
 export const getAllCategories = ai.defineFlow(
@@ -22,7 +22,7 @@ export const getAllCategories = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let collectionRef: admin.firestore.Query = db.collection("teamCategories");
+      let collectionRef: firebaseAdmin.firestore.Query = db.collection("teamCategories");
       if (countryCode) {
         collectionRef = collectionRef.where('countryCode', '==', countryCode);
       }

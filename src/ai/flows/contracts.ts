@@ -5,7 +5,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getDb } from '@/lib/firebase/server';
 import { ContractSchema, type Contract } from './contracts.types';
-import type { admin } from 'firebase-admin';
+import type firebaseAdmin from 'firebase-admin';
 import { getRbacContext, hasModuleAccess } from '@/lib/rbac';
 
 async function getCurrentContext() {
@@ -43,7 +43,7 @@ export const getContractsForMember = ai.defineFlow(
     }
     
     try {
-      const contractsCollectionRef: admin.firestore.Query = db.collection(`members/${requestedMemberId}/contracts`);
+      const contractsCollectionRef: firebaseAdmin.firestore.Query = db.collection(`members/${requestedMemberId}/contracts`);
       const snapshot = await contractsCollectionRef.orderBy('from', 'desc').get();
       if (snapshot.empty) {
         console.log(`[getContractsForMember] No contracts found for member ${requestedMemberId}.`);
