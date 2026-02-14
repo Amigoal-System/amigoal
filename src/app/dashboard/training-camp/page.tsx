@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTeam } from '@/hooks/use-team';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Edit, Trash2, Calendar, MapPin, Users, DollarSign, Send, FileText, List, LayoutGrid, Phone, Mail as MailIcon, Globe, X, Building, LogIn, LogOut, Info } from 'lucide-react';
@@ -991,7 +992,9 @@ const SuperAdminTrainingCampPage = () => {
     )
 }
 
-export default function TrainingCampPage({ currentUserRole }) {
+export default function TrainingCampPage() {
+    const { currentUserRole } = useTeam();
+    
     if (currentUserRole === 'Super-Admin') {
         return <SuperAdminTrainingCampPage />;
     }

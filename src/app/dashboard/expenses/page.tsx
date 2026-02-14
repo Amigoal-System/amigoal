@@ -11,7 +11,7 @@ import { CreateExpenseModal } from '@/components/CreateExpenseModal';
 import { ExpenseDetailModal } from '@/components/ExpenseDetailModal';
 import { useExpenses } from '@/hooks/useExpenses'; 
 
-export default function ExpensesPage({ currentUserRole }) {
+export default function ExpensesPage() {
     const { expenses, addExpense, updateExpense, isLoading } = useExpenses();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
