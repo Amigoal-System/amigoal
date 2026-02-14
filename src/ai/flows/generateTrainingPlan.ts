@@ -44,7 +44,7 @@ const generateTrainingPlanFlow = ai.defineFlow(
         throw new Error('No output from prompt');
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in generateTrainingPlanFlow:', error);
         throw new Error('Failed to generate training plan.');
     }

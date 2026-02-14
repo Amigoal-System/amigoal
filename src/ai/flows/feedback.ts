@@ -25,7 +25,7 @@ export const getFeedbackForMember = ai.defineFlow(
       const snapshot = await feedbackCollectionRef.get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Feedback[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getFeedbackForMember] Error fetching feedback:", error);
       throw error;
     }

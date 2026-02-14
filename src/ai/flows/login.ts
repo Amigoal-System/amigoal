@@ -94,7 +94,7 @@ export const getEmailForLogin = ai.defineFlow(
             // If we've reached here, the identifier is not a known user.
             return { email: null, error: "User not found or invalid identifier format." };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("[getEmailForLogin] Error looking up email for login identifier:", error);
             return { email: null, error: "An error occurred during lookup." };
         }

@@ -82,7 +82,7 @@ export const createPublicChatSession = ai.defineFlow(
             await batch.commit();
 
             return newChatId;
-        } catch(error) {
+        } catch (error: any) {
             console.error("Error in createPublicChatSession flow:", error);
             throw new Error("Failed to create chat session on the server.");
         }
@@ -111,7 +111,7 @@ export const getUserChatRooms = ai.defineFlow(
         }
 
         try {
-            let query = db.collection("chatRooms");
+            let query: firestore.Query = db.collection("chatRooms");
             
             // Filter by user participation
             if (context.userId) {
@@ -129,7 +129,7 @@ export const getUserChatRooms = ai.defineFlow(
             
             const snapshot = await query.orderBy('lastMessage.timestamp', 'desc').get();
             return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error fetching chat rooms:", error);
             return [];
         }
@@ -184,7 +184,7 @@ export const sendChatMessage = ai.defineFlow(
             });
             
             return "Message sent successfully";
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error sending message:", error);
             throw new Error("Failed to send message.");
         }

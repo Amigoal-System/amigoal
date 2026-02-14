@@ -72,7 +72,7 @@ const suggestPlayerToClubFlow = ai.defineFlow(
                 success: true,
                 message: `Vorschlag für ${playerName} wurde an ${clubName} (${teamName}) gesendet.`,
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating player suggestion:", error);
             return { success: false, message: 'Fehler beim Erstellen des Vorschlags.' };
         }

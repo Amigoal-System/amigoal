@@ -428,7 +428,7 @@ async function seedSpecialClubs() {
                     website: `${club.subdomain}.amigoal.app`,
                 });
                 console.log(`[Seeder] ✅ "${club.name}" seeded.`);
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`[Seeder] ❌ Failed to seed "${club.name}":`, error);
             }
         }

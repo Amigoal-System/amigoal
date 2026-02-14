@@ -26,7 +26,7 @@ export const getCarpoolsForMatch = ai.defineFlow(
       const snapshot = await carpoolsCollectionRef.get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Carpool[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getCarpoolsForMatch] Error fetching carpools:", error);
       throw error;
     }

@@ -130,7 +130,7 @@ const addMemberFlow = ai.defineFlow(
     }
 
     // 1. Save member data to Firestore
-    let createdMember;
+    let createdMember: Member | undefined;
     try {
         const membersCollectionRef = db.collection("members");
         const docRef = await membersCollectionRef.add(memberData);

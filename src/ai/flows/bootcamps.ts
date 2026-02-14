@@ -199,7 +199,7 @@ export const registerForBootcamp = ai.defineFlow(
         const campRef = db.collection('bootcamps').doc(campId);
         
         let campData: Bootcamp | undefined;
-        let couponRef;
+        let couponRef: firestore.DocumentReference | undefined;
         if (registration.couponId) {
             couponRef = db.collection('coupons').doc(registration.couponId);
         }

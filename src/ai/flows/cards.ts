@@ -22,8 +22,8 @@ export const getAllCards = ai.defineFlow(
         const snapshot = await db.collection("cards").get();
         if (snapshot.empty) return [];
         return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Card[];
-    } catch(e) {
-        console.error("Error fetching all cards:", e);
+    } catch (error: any) {
+        console.error("Error fetching all cards:", error);
         // In case the collection doesn't exist, return empty array
         return [];
     }
@@ -48,7 +48,7 @@ export const getCardsForMember = ai.defineFlow(
       const snapshot = await cardsCollectionRef.get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Card[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getCardsForMember] Error fetching cards:", error);
       throw error;
     }

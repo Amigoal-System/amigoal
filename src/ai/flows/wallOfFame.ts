@@ -35,7 +35,7 @@ const getAllHonoraryMembersFlow = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-        let query = db.collection("honoraryMembers");
+        let query: FirebaseFirestore.Query = db.collection("honoraryMembers");
         
         // RBAC: Filter by clubId for non-super-admins
         if (context.role !== 'Super-Admin') {

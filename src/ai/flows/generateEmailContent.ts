@@ -39,7 +39,7 @@ const generateEmailContentFlow = ai.defineFlow(
         throw new Error('No output from prompt');
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in generateEmailContentFlow:', error);
         throw new Error('Failed to generate email content.');
     }

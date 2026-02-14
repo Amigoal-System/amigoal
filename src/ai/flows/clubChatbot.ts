@@ -66,7 +66,7 @@ const clubChatbotFlow = ai.defineFlow(
         throw new Error('No output from prompt');
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in clubChatbotFlow:', error);
         // Provide a user-friendly fallback response
         return { response: "Entschuldigung, ich habe gerade technische Schwierigkeiten. Bitte versuchen Sie es später noch einmal." };

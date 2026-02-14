@@ -38,7 +38,7 @@ export const getRolesConfig = ai.defineFlow(
       
       // Return default config if none exists
       return {};
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getRolesConfig] Error fetching roles config:", error);
       return {};
     }
@@ -70,7 +70,7 @@ export const saveRolesConfig = ai.defineFlow(
       await db.collection("configurations").doc("roles").set(config);
       console.log("[saveRolesConfig] Roles config saved successfully");
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("[saveRolesConfig] Error saving roles config:", error);
       throw error;
     }

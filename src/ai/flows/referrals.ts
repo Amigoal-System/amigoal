@@ -35,7 +35,7 @@ export const getReferrals = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let query = db.collection("referrals");
+      let query: FirebaseFirestore.Query = db.collection("referrals");
       
       // RBAC: Filter by clubId for non-super-admins
       if (context.role !== 'Super-Admin') {

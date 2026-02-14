@@ -58,7 +58,7 @@ export const getAllMatches = ai.defineFlow(
       if (snapshot.empty) return [];
       
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Match[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getAllMatches] Error fetching matches:", error);
       // In case of an index error, this might still fail, but we try to be robust.
       if ((error as any).code === 5) {

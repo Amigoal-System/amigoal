@@ -38,7 +38,7 @@ export const getAllPolls = ai.defineFlow(
     try {
         const snapshot = await db.collection("polls").orderBy('createdAt', 'desc').get();
         return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Poll[];
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error fetching polls:", error);
         return [];
     }

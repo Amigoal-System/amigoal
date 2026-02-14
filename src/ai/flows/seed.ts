@@ -126,8 +126,8 @@ async function seedTeamCashData() {
             await batch.commit();
             console.log(`[Seeder] ✅ 'team-cash' seeded for ${Object.keys(initialTeamCashData).length} teams.`);
         }
-    } catch (e) {
-        console.error("Error seeding team cash data:", e);
+    } catch (error: any) {
+        console.error("Error seeding team cash data:", error);
     }
 }
 
@@ -236,7 +236,7 @@ async function backfillSaaSContracts() {
             console.log('[Seeder] ✅ All clubs have a SaaS contract.');
         }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('[Seeder] ❌ Error during SaaS contract backfill:', error);
     }
 }
@@ -354,7 +354,7 @@ export async function seedAllData() {
     // Seed demo users for all roles
     await seedDemoUsers();
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Seeder] ❌ An error occurred during database seeding:', error);
   }
 }

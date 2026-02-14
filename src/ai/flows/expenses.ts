@@ -33,7 +33,7 @@ export const getAllExpenses = ai.defineFlow(
     if (!db) throw new Error("Database service is not available.");
     
     try {
-      let query = db.collection("expenses");
+      let query: FirebaseFirestore.Query = db.collection("expenses");
       
       // RBAC: Filter by clubId for non-super-admins
       if (context.role !== 'Super-Admin') {
@@ -48,7 +48,7 @@ export const getAllExpenses = ai.defineFlow(
       const snapshot = await query.orderBy('date', 'desc').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Expense[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getAllExpenses] Error fetching expenses:", error);
       throw error;
     }

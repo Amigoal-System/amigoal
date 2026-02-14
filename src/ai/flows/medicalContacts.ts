@@ -38,7 +38,7 @@ export const getAllMedicalContacts = ai.defineFlow(
       const snapshot = await db.collection("medicalContacts").orderBy('lastName').orderBy('firstName').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as MedicalContact[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getAllMedicalContacts] Error fetching contacts:", error);
       return [];
     }
@@ -99,7 +99,7 @@ export const addMedicalContact = ai.defineFlow(
                     <p>Das Amigoal Team</p>
                 `
             });
-        } catch (error) {
+        } catch (error: any) {
             console.error(`[addMedicalContact] Contact created, but failed to send welcome email to ${contactData.email}:`, error);
             // We don't throw an error here, because the main action (creating the contact) was successful.
         }

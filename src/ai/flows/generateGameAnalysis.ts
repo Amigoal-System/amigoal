@@ -77,7 +77,7 @@ const generateGameAnalysisFlow = ai.defineFlow(
         throw new Error('No output from prompt');
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in generateGameAnalysisFlow:', error);
         throw new Error('Failed to generate game analysis.');
     }

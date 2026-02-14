@@ -55,7 +55,7 @@ export const getAllTrainings = ai.defineFlow(
       const snapshot = await trainingsCollectionRef.orderBy('date', 'desc').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Training[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getAllTrainings] Error fetching trainings:", error);
       // It's safer to return empty on error than potentially leaking data.
       return [];

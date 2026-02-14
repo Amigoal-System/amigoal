@@ -34,7 +34,7 @@ export const getAllSponsors = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-      let query = db.collection("sponsors");
+      let query: FirebaseFirestore.Query = db.collection("sponsors");
       
       // RBAC: Filter by clubId for non-super-admins
       if (context.role !== 'Super-Admin') {

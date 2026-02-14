@@ -49,7 +49,7 @@ export const getAllNewsletterGroups = ai.defineFlow(
       const snapshot = await db.collection("newsletterGroups").where('clubId', '==', effectiveClubId).orderBy('name').get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as NewsletterGroup[];
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error fetching newsletter groups:", error);
         return [];
     }

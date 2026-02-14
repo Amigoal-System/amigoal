@@ -269,7 +269,7 @@ export const registerForCamp = ai.defineFlow(
         const campRef = db.collection('camps').doc(campId);
         
         let campData: Camp | undefined;
-        let couponRef;
+        let couponRef: firestore.DocumentReference | undefined;
         if (registration.couponId) {
             couponRef = db.collection('coupons').doc(registration.couponId);
         }

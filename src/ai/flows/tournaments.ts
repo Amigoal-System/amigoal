@@ -35,7 +35,7 @@ export const getAllTournaments = ai.defineFlow(
       throw new Error("Database service is not available.");
     }
     try {
-        let query = db.collection("tournaments");
+        let query: FirebaseFirestore.Query = db.collection("tournaments");
         
         // RBAC: Filter by clubId for non-super-admins
         if (context.role !== 'Super-Admin') {

@@ -40,7 +40,7 @@ const generateEventDescriptionFlow = ai.defineFlow(
         throw new Error('No text output from prompt');
       }
       return { description: text };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in generateEventDescriptionFlow:', error);
         // Fallback to prevent crashing the entire application
         // We return the original keywords as the description if AI fails.

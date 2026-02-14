@@ -75,7 +75,7 @@ const validateIdeaFlow = ai.defineFlow(
         throw new Error('No output from validation prompt');
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in validateIdeaFlow:', error);
       throw new Error('Failed to validate feature idea.');
     }

@@ -25,7 +25,7 @@ export const getAbsencesForMember = ai.defineFlow(
       const snapshot = await absencesCollectionRef.get();
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Absence[];
-    } catch (error) {
+    } catch (error: any) {
       console.error("[getAbsencesForMember] Error fetching absences:", error);
       throw error;
     }

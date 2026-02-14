@@ -60,10 +60,10 @@ export const getAllEvents = ai.defineFlow(
         // Sort in code to avoid composite index requirement
         return events.sort((a, b) => new Date(a.from).getTime() - new Date(b.from).getTime());
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("[getAllEvents] Error fetching events:", error);
         // If collection doesn't exist, it's not a critical error, just return empty.
-        if ((error as any).code === 5) { 
+        if (error.code === 5) { 
             return [];
         }
         throw error;
