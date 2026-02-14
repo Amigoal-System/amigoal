@@ -173,7 +173,9 @@ export const updateStaff = ai.defineFlow(
     const changes: string[] = [];
     Object.keys(staffData).forEach(key => {
         // Simple comparison, for nested objects this would need to be more robust
-        if (JSON.stringify(staffData[key]) !== JSON.stringify(currentData[key])) {
+        const newValue = (staffData as Record<string, any>)[key];
+        const oldValue = (currentData as Record<string, any>)[key];
+        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
             changes.push(`Feld '${key}' geändert.`);
         }
     });
