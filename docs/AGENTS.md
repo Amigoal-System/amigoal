@@ -52,9 +52,29 @@
 
 ---
 
+## Agent 8: Test-Agent (Neu)
+**Status:** ✅ Fertig
+
+- [x] Test-Agent Framework erstellt ✅
+- [x] 121 Testfälle definiert ✅
+- [x] Test-Reports generieren ✅
+
+**Test-Abdeckung:**
+- 12 Benutzerrollen
+- 121 Testfälle insgesamt
+- Manuelle & automatisierte Tests
+
+**Dateien:**
+- `/root/amigoal/test-agent.js` - Test-Agent
+- `/root/amigoal/test-cases.md` - Testfälle Rollen 1-6
+- `/root/amigoal/test-cases-1.md` - Testfälle Rollen 7-12
+
+---
+
 ## ✅ Alle Agenten fertig!
 
 Das RBAC-System ist nun vollständig implementiert:
 - 25+ AI-Flows mit RBAC
 - Firestore Security Rules
 - Chat & Polls jetzt als Server-Flows
+- Test-Agent mit 121 Testfällen
